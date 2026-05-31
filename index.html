@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Кантина Татуина — Тренажёр меню</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap');
+  :root{
+    --night:#0e0b07; --night2:#171209; --concrete:#241d14;
+    --sandstone:#c9a96a; --sand-lt:#e6cd92; --sand-dim:#8a7048;
+    --ember:#bd5524; --ember-lt:#e08a4a; --glow:#eab15a;
+    --paper:#ece0c8; --paper-dim:#b8a888;
+    --ok:#7fa86a; --ok-bg:#26301f; --bad:#c2533a; --bad-bg:#33201a;
+    --line:#3a3024; --line-lt:#4a3e2e;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  body{
+    font-family:'Jost',sans-serif;color:var(--paper);
+    background:
+      radial-gradient(ellipse 70% 38% at 50% 0%, #2a2013 0%, transparent 62%),
+      radial-gradient(circle at 50% 8%, rgba(234,177,90,.10), transparent 40%),
+      linear-gradient(180deg,#0e0b07 0%,#0a0805 100%);
+    background-attachment:fixed;min-height:100vh;padding:0 0 70px;letter-spacing:.01em;
+  }
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+    background-image:radial-gradient(circle at 50% 0%, rgba(240,179,94,.06), transparent 45%);}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");}
+  .wrap{max-width:700px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
+
+  header{text-align:center;padding:38px 0 14px}
+  .portal{width:74px;height:74px;margin:0 auto 14px;display:block;filter:drop-shadow(0 0 22px rgba(234,177,90,.4))}
+  .portal .arch{fill:none;stroke:var(--sandstone);stroke-width:2.2}
+  .portal .suns{fill:var(--glow)}
+  .crest{font-size:24px;letter-spacing:14px;color:var(--sandstone);margin-bottom:10px;padding-left:14px;
+    filter:drop-shadow(0 0 14px rgba(240,179,94,.35))}
+  .kicker{font-family:'Jost';font-weight:500;letter-spacing:.42em;text-transform:uppercase;font-size:10.5px;color:var(--ember-lt)}
+  h1{font-family:'Cormorant Garamond';font-weight:600;font-size:clamp(40px,11vw,62px);line-height:.95;margin:8px 0 10px;
+    color:var(--sand-lt);letter-spacing:.14em;text-transform:uppercase;text-indent:.14em}
+  .sub{font-size:14.5px;color:var(--paper-dim);max-width:480px;margin:0 auto;line-height:1.55;font-weight:300}
+
+  /* arched panel */
+  .panel{background:linear-gradient(165deg,rgba(36,29,20,.95),rgba(22,17,9,.95));
+    border:1px solid var(--line);border-radius:40px 40px 16px 16px;padding:22px 18px;margin:15px 0;
+    box-shadow:0 18px 44px rgba(0,0,0,.55), inset 0 1px 0 rgba(234,177,90,.07);position:relative;overflow:hidden}
+  .panel::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;
+    background:linear-gradient(90deg,transparent,var(--sandstone),transparent);opacity:.4}
+  .panel h2{font-family:'Cormorant Garamond';font-weight:600;font-size:21px;margin-bottom:4px;color:var(--sand-lt);
+    display:flex;align-items:center;gap:9px}
+  .panel .lead{font-size:13px;color:var(--paper-dim);margin-bottom:16px;font-weight:300}
+
+  /* menu of modes (home) */
+  .modes{display:flex;flex-direction:column;gap:11px}
+  .mode{display:flex;align-items:center;gap:15px;text-align:left;width:100%;cursor:pointer;font-family:inherit;
+    background:linear-gradient(120deg,rgba(48,40,30,.7),rgba(34,28,20,.7));border:1px solid var(--line);
+    border-radius:16px;padding:16px 17px;transition:.16s;color:var(--paper)}
+  .mode:hover{transform:translateY(-2px);border-color:var(--sand-dim);box-shadow:0 10px 26px rgba(0,0,0,.4)}
+  .mode .ic{flex:none;width:46px;height:46px;border-radius:13px;display:grid;place-items:center;font-size:22px;
+    background:radial-gradient(circle at 35% 30%,var(--ember-lt),var(--ember));box-shadow:0 4px 14px rgba(194,94,42,.4),inset 0 1px 0 #fff4}
+  .mode .tx b{font-family:'Cormorant Garamond';font-size:20px;font-weight:600;color:var(--sand-lt);display:block;line-height:1.1}
+  .mode .tx span{font-size:12.5px;color:var(--paper-dim);font-weight:300}
+  .mode .arr{margin-left:auto;color:var(--sand-dim);font-size:20px}
+
+  /* category grid */
+  .cats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .cat{position:relative;border:1px solid var(--line);border-radius:15px;padding:15px 13px;
+    background:linear-gradient(125deg,rgba(46,38,28,.6),rgba(32,26,18,.6));cursor:pointer;transition:.15s;
+    font-family:inherit;color:var(--paper);text-align:left}
+  .cat:hover{transform:translateY(-2px);border-color:var(--sand-dim)}
+  .cat.on{background:linear-gradient(135deg,var(--ember),var(--ember-lt));border-color:var(--ember-lt);
+    box-shadow:0 8px 22px rgba(194,94,42,.4)}
+  .cat .ct{font-family:'Cormorant Garamond';font-size:19px;font-weight:600;color:var(--sand-lt);display:flex;align-items:center;gap:7px}
+  .cat.on .ct{color:#fff}
+  .cat .cn{font-size:11.5px;color:var(--paper-dim);font-weight:300;margin-top:2px}
+  .cat.on .cn{color:#ffffffcc}
+  .cat .pr{font-size:9px;letter-spacing:.15em;color:var(--glow);position:absolute;top:11px;right:12px;font-weight:600}
+  .cat.on .pr{color:#ffe9c2}
+
+  .btn{width:100%;border:none;border-radius:15px;padding:17px;cursor:pointer;font-family:'Cormorant Garamond';
+    font-weight:700;font-size:19px;letter-spacing:.02em;color:#1a1208;transition:.16s;
+    background:linear-gradient(120deg,var(--glow),var(--ember-lt) 60%,var(--ember));
+    box-shadow:0 10px 26px rgba(194,94,42,.42),inset 0 1px 0 #fff7}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(194,94,42,.5)}
+  .btn.ghost{background:transparent;border:1px solid var(--line-lt);color:var(--paper-dim);font-size:15px;
+    box-shadow:none;font-weight:500;font-family:'Jost'}
+  .btn.ghost:hover{border-color:var(--sand-dim);color:var(--sand-lt);background:rgba(60,48,36,.3)}
+  .lenrow{display:flex;gap:9px;margin-bottom:4px}
+  .len{flex:1;border:1px solid var(--line);border-radius:13px;padding:13px 4px;cursor:pointer;font-family:'Cormorant Garamond';
+    font-weight:600;font-size:18px;text-align:center;transition:.15s;background:rgba(40,32,24,.5);color:var(--paper)}
+  .len.on{background:var(--sandstone);color:var(--night);border-color:var(--sandstone)}
+  .row2{display:flex;gap:10px;margin-top:12px}
+  .row2 .btn{flex:1}
+
+  .stat{display:flex;justify-content:center;gap:18px;margin:14px 0 2px;flex-wrap:wrap}
+  .stat .s{text-align:center}
+  .stat .s b{font-family:'Cormorant Garamond';font-size:24px;color:var(--glow);display:block;line-height:1}
+  .stat .s span{font-size:10.5px;color:var(--paper-dim);letter-spacing:.1em;text-transform:uppercase}
+
+  /* quiz */
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 0 8px}
+  .back{background:none;border:1px solid var(--line);border-radius:11px;padding:8px 13px;color:var(--paper-dim);
+    cursor:pointer;font-family:inherit;font-size:13px;transition:.15s}
+  .back:hover{color:var(--sand-lt);border-color:var(--sand-dim)}
+  .streak{font-family:'Cormorant Garamond';font-size:17px;color:var(--glow);font-weight:600}
+  .streak.cold{color:var(--paper-dim)}
+  .bar{height:7px;background:#0006;border-radius:20px;overflow:hidden;margin:4px 0;border:1px solid var(--line)}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--ember),var(--glow));transition:width .3s;border-radius:20px}
+  .meta{display:flex;justify-content:space-between;font-size:12px;color:var(--paper-dim);margin-bottom:13px;font-weight:400}
+  .meta .sc b{color:var(--ok)} .meta .sc i{color:var(--bad);font-style:normal}
+  .qcard{background:linear-gradient(165deg,rgba(38,30,21,.96),rgba(22,17,10,.96));border:1px solid var(--line);
+    border-radius:40px 40px 16px 16px;padding:24px 19px;box-shadow:0 18px 40px rgba(0,0,0,.55),inset 0 1px 0 rgba(234,177,90,.07);
+    animation:rise .28s ease}
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .qtag{display:inline-block;font-size:9.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--glow);border:1px solid var(--line-lt);padding:4px 11px;border-radius:20px;margin-bottom:13px;background:rgba(240,179,94,.06)}
+  .q{font-family:'Cormorant Garamond';font-size:25px;font-weight:600;line-height:1.22;color:var(--sand-lt);margin-bottom:19px}
+  .q b{color:var(--glow)}
+  .q .hintline{display:block;font-family:'Jost';font-size:14.5px;font-weight:300;color:var(--paper-dim);margin-top:8px;line-height:1.45}
+  .opts{display:flex;flex-direction:column;gap:9px}
+  .opt{border:1px solid var(--line);background:rgba(40,33,24,.55);border-radius:14px;padding:14px 15px;cursor:pointer;
+    font-size:15.5px;font-weight:400;line-height:1.35;text-align:left;transition:.13s;font-family:inherit;color:var(--paper);
+    display:flex;gap:12px;align-items:flex-start}
+  .opt:hover:not(.dis){border-color:var(--ember-lt);background:rgba(56,46,34,.7)}
+  .opt .let{flex:none;width:25px;height:25px;border-radius:8px;background:var(--concrete);color:var(--sand-lt);
+    border:1px solid var(--line-lt);font-weight:600;font-size:13px;display:grid;place-items:center;font-family:'Cormorant Garamond'}
+  .opt.dis{cursor:default}
+  .opt.correct{border-color:var(--ok);background:var(--ok-bg)}
+  .opt.correct .let{background:var(--ok);color:#10140c;border-color:var(--ok)}
+  .opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+  .opt.wrong .let{background:var(--bad);color:#fff;border-color:var(--bad)}
+  .opt.multi.sel{border-color:var(--sandstone);background:rgba(201,169,106,.14)}
+  .opt.multi.sel .let{background:var(--sandstone);color:var(--night);border-color:var(--sandstone)}
+  .markok{display:block;width:100%;margin-top:11px;border:1px dashed var(--sand-dim);background:rgba(201,169,106,.08);
+    color:var(--sand-lt);border-radius:11px;padding:11px;cursor:pointer;font-family:'Jost';font-size:13.5px;transition:.15s}
+  .markok:hover{background:rgba(201,169,106,.18);border-color:var(--sandstone)}
+  .dish .body li.alg{background:rgba(189,85,36,.18);border-color:#6a3a22;color:var(--ember-lt);font-weight:500}
+
+  .expl{margin-top:16px;border-radius:14px;padding:15px 16px;font-size:14px;line-height:1.5;animation:rise .25s ease;font-weight:300}
+  .expl.good{background:var(--ok-bg);border:1px solid #3f5230}
+  .expl.poor{background:var(--bad-bg);border:1px solid #5a3024}
+  .expl .h{font-family:'Cormorant Garamond';font-weight:700;font-size:17px;margin-bottom:6px;display:flex;align-items:center;gap:7px}
+  .expl.good .h{color:var(--ok)} .expl.poor .h{color:var(--ember-lt)}
+  .expl b{color:var(--sand-lt);font-weight:600}
+  .expl .tip{margin-top:10px;padding-top:10px;border-top:1px solid #ffffff14;font-size:13px;color:var(--paper-dim)}
+  .next{width:100%;margin-top:14px;border:none;border-radius:14px;padding:15px;cursor:pointer;font-family:'Cormorant Garamond';
+    font-weight:700;font-size:18px;color:var(--sand-lt);background:linear-gradient(120deg,var(--concrete),#3a3024);
+    border:1px solid var(--line-lt);transition:.15s}
+  .next:hover{transform:translateY(-2px);border-color:var(--sand-dim)}
+
+  /* study mode */
+  .search{width:100%;padding:13px 15px;border-radius:13px;border:1px solid var(--line-lt);background:rgba(30,24,18,.7);
+    color:var(--paper);font-family:inherit;font-size:15px;margin-bottom:13px}
+  .search::placeholder{color:var(--sand-dim)}
+  .search:focus{outline:none;border-color:var(--ember-lt)}
+  .dish{background:linear-gradient(165deg,rgba(42,35,27,.9),rgba(28,22,16,.9));border:1px solid var(--line);
+    border-radius:18px;margin-bottom:11px;overflow:hidden;transition:.15s}
+  .dish summary{cursor:pointer;padding:15px 16px;list-style:none;display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond'}
+  .dish summary::-webkit-details-marker{display:none}
+  .dish summary .dn{font-size:20px;font-weight:600;color:var(--sand-lt);flex:1}
+  .dish summary .dg{font-size:12px;color:var(--paper-dim);font-family:'Jost';font-weight:300}
+  .dish summary .ar{color:var(--sand-dim);transition:.2s}
+  .dish[open] summary .ar{transform:rotate(90deg)}
+  .dish .body{padding:0 16px 16px;font-size:14px;line-height:1.55;font-weight:300}
+  .dish .body .d{color:var(--paper-dim);font-style:italic;margin-bottom:12px;font-family:'Cormorant Garamond';font-size:16px}
+  .dish .body .lbl{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ember-lt);font-weight:600;margin:11px 0 5px}
+  .dish .body ul{list-style:none;display:flex;flex-wrap:wrap;gap:6px}
+  .dish .body li{background:rgba(60,48,36,.5);border:1px solid var(--line);border-radius:8px;padding:4px 9px;font-size:12.5px;color:var(--paper)}
+  .dish .body .fact{display:flex;gap:8px;margin:5px 0;font-size:13.5px}
+  .dish .body .fact b{color:var(--sand-lt);font-weight:600;flex:none}
+  .dish .body .rule{background:rgba(194,94,42,.12);border:1px solid #5a3a24;border-radius:9px;padding:8px 11px;margin-top:8px;font-size:13px;color:var(--glow)}
+  .dish .body .nota{color:var(--bad)}
+  .catdiv{font-family:'Cormorant Garamond';font-size:15px;letter-spacing:.05em;color:var(--sand-dim);text-transform:uppercase;
+    margin:20px 0 9px;padding-bottom:6px;border-bottom:1px solid var(--line);font-weight:600}
+
+  /* results */
+  .res{text-align:center}
+  .ring{width:150px;height:150px;margin:6px auto 4px;position:relative}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pct{position:absolute;inset:0;display:grid;place-items:center;font-family:'Cormorant Garamond';font-size:44px;font-weight:700;color:var(--sand-lt)}
+  .verdict{font-family:'Cormorant Garamond';font-size:23px;color:var(--glow);margin:8px 0 4px;font-weight:600}
+  .vsub{font-size:13.5px;color:var(--paper-dim);font-weight:300;margin-bottom:6px}
+  .weakbox{text-align:left;margin-top:20px}
+  .weakbox h3{font-family:'Cormorant Garamond';font-size:18px;color:var(--sand-lt);margin-bottom:10px;font-weight:600}
+  .weak{background:rgba(40,32,24,.6);border:1px solid var(--line);border-left:3px solid var(--bad);border-radius:11px;
+    padding:12px 14px;font-size:13.5px;margin-bottom:8px;line-height:1.45;font-weight:300}
+  .weak .qq{font-weight:500;color:var(--sand-lt);margin-bottom:4px}
+  .weak .yy{font-size:12.5px}
+  .weak .yy .me{color:var(--bad)} .weak .yy .ri{color:var(--ok)}
+  .weak .tp{font-size:12px;color:var(--paper-dim);margin-top:5px}
+  .footer{text-align:center;font-size:11px;color:var(--sand-dim);margin-top:34px;letter-spacing:.05em;line-height:1.7}
+  .byline{color:var(--sandstone);font-family:'Cormorant Garamond';font-size:13px;letter-spacing:.08em;opacity:.85}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(80px);z-index:50;
+    background:var(--concrete);border:1px solid var(--sand-dim);color:var(--sand-lt);padding:11px 20px;border-radius:30px;
+    font-family:'Cormorant Garamond';font-size:17px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;transition:.3s}
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="toast" id="toast"></div>
+<script>
+
+// ====== TELEGRAM MINI APP ИНТЕГРАЦИЯ ======
+const TG = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+const IN_TG = !!(TG && TG.initData !== undefined && TG.platform && TG.platform !== 'unknown');
+if (TG) {
+  try {
+    TG.ready();
+    TG.expand();
+    if (TG.disableVerticalSwipes) TG.disableVerticalSwipes(); // не закрывать свайпом во время теста
+    // фирменная тёмная тема Tatooine (не подстраиваемся под клиента)
+    if (TG.setHeaderColor) TG.setHeaderColor('#0e0b07');
+    if (TG.setBackgroundColor) TG.setBackgroundColor('#0e0b07');
+  } catch(e){}
+}
+// haptic-обёртка
+const HAPTIC = {
+  ok(){ try{ TG && TG.HapticFeedback && TG.HapticFeedback.notificationOccurred('success'); }catch(e){} },
+  err(){ try{ TG && TG.HapticFeedback && TG.HapticFeedback.notificationOccurred('error'); }catch(e){} },
+  tap(){ try{ TG && TG.HapticFeedback && TG.HapticFeedback.selectionChanged(); }catch(e){} }
+};
+// нативная кнопка «Назад» Telegram
+function tgBack(show, handler){
+  if(!TG || !TG.BackButton) return;
+  try{
+    TG.BackButton.offClick && TG.BackButton.offClick(_tgBackH);
+    if(show){ _tgBackH = handler; TG.BackButton.onClick(_tgBackH); TG.BackButton.show(); }
+    else { TG.BackButton.hide(); }
+  }catch(e){}
+}
+let _tgBackH = ()=>{};
+
+// ====== СОХРАНЕНИЕ ПРОГРЕССА (CloudStorage в Telegram, иначе память сессии) ======
+const STORE_KEY = 'tatooine_progress_v1';
+function saveProgress(){
+  const data = JSON.stringify({
+    dishMiss: SESSION.dishMiss, totalAnswered: SESSION.totalAnswered,
+    totalCorrect: SESSION.totalCorrect, bestStreak: SESSION.bestStreak
+  });
+  if (TG && TG.CloudStorage) { try { TG.CloudStorage.setItem(STORE_KEY, data, ()=>{}); } catch(e){} }
+}
+function loadProgress(cb){
+  if (TG && TG.CloudStorage) {
+    try {
+      TG.CloudStorage.getItem(STORE_KEY, (err, val)=>{
+        if(!err && val){ try{ const d=JSON.parse(val);
+          SESSION.dishMiss=d.dishMiss||{}; SESSION.totalAnswered=d.totalAnswered||0;
+          SESSION.totalCorrect=d.totalCorrect||0; SESSION.bestStreak=d.bestStreak||0;
+        }catch(e){} }
+        cb && cb();
+      });
+      return;
+    } catch(e){}
+  }
+  cb && cb();
+}
+
+// ====== ДАННЫЕ МЕНЮ ======
+// Категории с повышенным весом: sauces, mangal, soups
+const MENU = {
+  soups: {
+    label: "Супы",
+    weight: 3,
+    dishes: [
+      {
+        name: "Мерджимек Чорбасы",
+        gram: "500г 🌶",
+        time: 20,
+        desc: "Густой пикантный суп из красной чечевицы с нутом, томатами и острым перцем. Турецкий национальный суп.",
+        comp: ["красная чечевица","морковь","куриный бульон","нут","мука пшеничная (глютен)","острый перец чили","лук","чеснок","мята","томаты","оливковое масло (сверху)"],
+        garnish: "ягель (северный мох — хрустящий декор), обожжённый лимон",
+        takeaway: true,
+        facts: [
+          ["«Мерджимек» (mercimek) с турецкого", "«чечевица»"],
+          ["Ягель — это", "северный мох, сушат и используют как хрустящий декор"],
+          ["Национальный суп какой страны", "Турция"]
+        ]
+      },
+      {
+        name: "Борщ «Перезагрузка»",
+        gram: "500/50/50г",
+        time: 25,
+        desc: "Борщ, запечённый под хлебной шапочкой ручной работы. Овощи не обжариваются — томятся в свекольном соку.",
+        comp: ["телятина","бульон на телятине","свекла / свекольный сок","картофель","красный болгарский перец","капуста","томаты","петрушка","сахар","лимонный сок","чеснок","сливочное масло","бараний курдюк"],
+        garnish: "тёмная хлебная шапка (мука, дрожжи, вода, сахар, соль, яйцо, чёрный активированный уголь для цвета); отдельно: ферментированный тёмный чеснок, зелёный лук, красный лук, сметана + четверговая чёрная соль, чёрный перец, бездрожжевые хлебные палочки",
+        takeaway: true,
+        facts: [
+          ["Кто всегда лично готовит борщ", "бренд-шеф Бисо Чеченов"],
+          ["Что НЕ происходит с овощами", "их не обжаривают — томятся в свекольном соку (ниже калорийность)"],
+          ["Почему «Перезагрузка»", "путник восстановился из доступных ингредиентов и продолжил путь"],
+          ["Хлебные палочки на адыгейском", "мукемышь (хранятся полгода, не черствеют)"],
+          ["Что даёт цвет хлебной шапке", "чёрный активированный уголь"]
+        ]
+      },
+      {
+        name: "Лывжа / Шорпа",
+        gram: "500/50г 🌶",
+        time: 25,
+        desc: "Ароматный пикантный суп на говяжьем бульоне с мягкой говядиной, картофелем, чили и травами.",
+        comp: ["говяжий бульон","говядина","лук","картофель","перец чили","соль","чёрный перец","реган","мята","кинза","специя «сухой чеснок»"],
+        garnish: "подаётся с цахтоном (маринованный острый перец + сметана)",
+        sauce: "Цахтон",
+        takeaway: true,
+        facts: [
+          ["Кто выбирает название блюда", "гость (лывжа / шорпа / шурпа — на усмотрение гостя)"],
+          ["С каким соусом подаётся", "Цахтон"]
+        ]
+      },
+      {
+        name: "Бедуинский суп",
+        gram: "500/150г 🌶",
+        time: 30,
+        desc: "Очень густой, насыщенный, пикантный суп на бульоне из ягнёнка с каре ягнёнка, нутом, каштанами, сушёной сливой.",
+        comp: ["бульон из ягнёнка","каре ягнёнка","нут","каштаны","сушёная слива","обожжённый лимон","тимьян","зира","картофель","лук","морковь","чеснок","оливковое масло","кинза","мята","реган","соль","чёрный перец","томаты"],
+        garnish: "отдельно — отвар конского щавеля 150мл (холодный), запивать чаем в пиалке",
+        takeaway: true,
+        facts: [
+          ["На каком бульоне", "на бульоне из ягнёнка (баранины)"],
+          ["Что подаётся отдельно и холодным", "отвар конского щавеля 150мл"],
+          ["Что рекомендуем для рецепторов", "запивать чаем (налить в пиалку, сообщить гостю)"],
+          ["Когда обжигается тимьян", "при подаче — для более яркого аромата"]
+        ]
+      },
+      {
+        name: "Томлёные пустынные щи",
+        gram: "500/50г",
+        time: 15,
+        desc: "Густые щи из квашеной капусты с томлёной говядиной (распадается на волокна) и белыми грибами.",
+        comp: ["говяжий бульон","томлёная говядина","квашеная капуста","лук","морковь","картофель","капустный рассол","белые грибы","петрушка","чёрный перец","чеснок"],
+        garnish: "сметана + четверговая чёрная соль, бородинский хлеб, курдюк; водка в пипетке",
+        takeaway: true,
+        facts: [
+          ["Какие грибы", "белые грибы"],
+          ["Как подаётся водка", "в пипетке (пара капель для согревающего эффекта)"],
+          ["Кому по умолчанию НЕ подаём водку", "мусульманам — в комментарии «БЕЗ водки»"],
+          ["Какой хлеб подаётся", "бородинский"]
+        ]
+      }
+    ]
+  },
+
+  sauces: {
+    label: "Соусы",
+    weight: 3,
+    dishes: [
+      {name:"Тузлук", gram:"50г", time:4, desc:"Сливочно-чесночный соус. С тюркского — «солёный раствор/рассол».",
+       comp:["сметана","кефир","чеснок","соль","перец","паприка"], takeaway:true,
+       facts:[["Перевод с тюркского","«солёный раствор» / «рассол»"],["К чему подаётся","хычыны, хачапури, печёночное, язычки"]]},
+      {name:"Цахтон", gram:"50г 🌶", time:4, desc:"Осетинский соус: сливочный, пикантный, травяной, освежающий.",
+       comp:["сметана","маринованные листья острого перца"], takeaway:true,
+       facts:[["Национальность","осетинский"],["К чему","Лывжа/Шорпа, в Даре Оазиса"]]},
+      {name:"Татахи", gram:"50г", time:4, desc:"Яркий томатный соус, «чтобы макали». С армянского — «макать» (ударение на последний слог).",
+       comp:["томатная паста из натуральных томатов","чеснок","зелень","специи","чили"], takeaway:true,
+       facts:[["Перевод с армянского","«макать» (ударение на последний слог)"],["К чему","базовый соус ко всему мясу мангала"]]},
+      {name:"Томатный (к хинкалу)", gram:"50г", time:4, desc:"Томатный, кисло-сладкий, умеренно чесночный, мягкий.",
+       comp:["томатная паста из натуральных томатов","чеснок","растительное масло","соль","сахар"], takeaway:true,
+       facts:[["К чему","к хинкалу"]]},
+      {name:"Трюфельный (к суккулентам)", gram:"50г", time:4, desc:"Умами, трюфельный, кисло-сладкий, пряный, глубокий.",
+       comp:["соевый соус","имбирь","масло с трюфелем","кинза","сок лайма","сахар"], takeaway:true,
+       facts:[["К чему","Суккуленты Татуина, Карпаччо пустынной капусты"],["Что такое умами","пятый базовый вкус — насыщенный, мясной, бульонный"]]},
+      {name:"Восточный соус", gram:"50г", time:4, desc:"Солёно-сладкий, ореховый, умами, слегка кисло-пикантный.",
+       comp:["кунжутное масло","растительное масло","репчатый лук","тростниковый сахар","яблочный уксус","соевый соус","горчица"], takeaway:true,
+       facts:[["К чему","к мясу (мраморная телятина)"]]},
+      {name:"Ореховый соус (на А110%)", gram:"50г", time:4, desc:"Сладковатый, насыщенный, с ярким вкусом кешью и кунжутным послевкусием.",
+       comp:["орехи кешью","оливковое масло","соевый соус","мицукан","мирин (рисовое вино)","белый кунжут","тростниковый сахар"], takeaway:true,
+       facts:[["К чему","на зелёный салат А110%"],["Основной орех","кешью"]]},
+      {name:"Соус из горного пажитника (на хинкал)", gram:"50г", time:4, desc:"Кавказский соус на сметане с горным пажитником.",
+       comp:["сметана","ореховая трава (горный пажитник)","чеснок","соль"], takeaway:true,
+       facts:[["К чему","к хинкалу"],["Горный пажитник","ароматная горная трава с ореховым тёплым вкусом"]]},
+      {name:"Чимичурри", gram:"50г", time:4, desc:"Традиционный аргентинский соус: травянистый, острый, кисловатый.",
+       comp:["кинза","петрушка","перец чили","маринованный красный лук","лимонный фреш","оливковое масло"], takeaway:true,
+       facts:[["Национальность","аргентинский"],["К чему","к вяленому мясу"]]},
+      {name:"Брусничный соус (к утке)", gram:"50г", time:4, desc:"Сладко-кислый ягодный соус с нотами мяты и чёрного перца.",
+       comp:["брусника","мята","чёрный перец","сахар"], takeaway:true,
+       facts:[["К чему","к Утке Магре, к мясу и сыру"]]},
+      {name:"Соус ореховый (к Огненным язычкам)", gram:"50г", time:4, desc:"Ореховый соус на кефире и сметане.",
+       comp:["ореховая трава","кефир","чеснок","сметана"], takeaway:true,
+       facts:[["К чему","к Огненным язычкам"],["Отличие от соуса из пажитника","здесь есть кефир, нет соли как акцента"]]}
+    ]
+  },
+
+  mangal: {
+    label: "Мангал / Мясо",
+    weight: 3,
+    dishes: [
+      {name:"Корейка карачаевского ягнёнка", gram:"за 100г", time:25, desc:"Сочные рёбра карачаевского барашка в мини-мангале.",
+       comp:["рёбрышки карачаевского барашка","лаваш","маринованный красный лук в уксусе с укропом","зёрна граната","соус Татахи"],
+       marinade:"газированная вода, лук, соль, специи", takeaway:true,
+       facts:[["Маринад","газированная вода, лук, соль, специи"],["Особенность карачаевской баранины","горные пастбища, без запаха, низкий холестерин"]]},
+      {name:"Мякоть ягнёнка", gram:"за 100г", time:25, desc:"Сочная мякоть карачаевского ягнёнка на лаваше.",
+       comp:["мякоть ягнёнка","лаваш","маринованный красный лук в уксусе с зеленью","зёрна граната","соус Татахи"],
+       marinade:"газированная вода, лук, соль, специи", takeaway:true,
+       facts:[["Маринад","газированная вода, лук, соль, специи"]]},
+      {name:"Мясо бедуинской птицы", gram:"за 100г", time:25, desc:"Нежное куриное филе на углях.",
+       comp:["куриное филе грудки","лаваш","маринованный лук в уксусе с укропом","зёрна граната","соус Татахи"],
+       marinade:"томатная паста, домашний майонез (яичные желтки + оливковое масло), соль", takeaway:true,
+       facts:[["Маринад","томатная паста, домашний майонез, соль"]]},
+      {name:"Крылья скитальцев", gram:"за 100г", time:25, desc:"Сочные куриные крылья в мини-мангале.",
+       comp:["куриные крылья","лаваш","маринованный красный лук в уксусе с укропом","зёрна граната","соус Татахи"],
+       marinade:"томатная паста, домашний майонез, соль", takeaway:true,
+       facts:[["Сколько крыльев в 200г","3 или 4 (в зависимости от веса)"]]},
+      {name:"Уч-панжа", gram:"300г (порция)", time:35, desc:"Шашлык из бараньей вырезки на 3 шампурах: вырезка + курдюк.",
+       comp:["вырезка баранины","курдюк","лепёшка роти","маринованный красный лук в уксусе с зеленью","соус Татахи","гранат"],
+       marinade:"соль, перец, зира, кориандр", takeaway:true,
+       facts:[["«Уч панжа» означает","«три пальца» — размер кусочка под хват тремя пальцами"],["Маринад","соль, перец, зира, кориандр"]]},
+      {name:"Вырезка мраморной телятины", gram:"за 100г", time:25, desc:"Вырезка прожарки medium на углях, с двумя соусами.",
+       comp:["вырезка телятины","маринованный красный лук в уксусе с зеленью (базилик, мята, петрушка)","лепёшка роти","зёрна граната","соус Татахи","восточный соус"],
+       marinade:"растительное масло, тимьян, соевый соус, соль, специи", takeaway:true,
+       facts:[["С какой зеленью лук","базилик, мята, петрушка"],["Два соуса","Татахи (томатный) и восточный"],["Маринад","растительное масло, тимьян, соевый соус, соль, специи"]]},
+      {name:"Адана-кебаб", gram:"за 100г 🌶", time:20, desc:"Пикантное люля из рубленой телятины с острым перцем.",
+       comp:["фарш телятины","лаваш","маринованный красный лук в уксусе с зеленью","зёрна граната","соус Татахи","армянский острый перец"],
+       marinade:"телятина, лук, зелень, чили, болгарский перец, специи, говяжий жир", takeaway:true,
+       facts:[["Из какого фарша","из телятины (с чили, болгарским перцем, говяжьим жиром)"],["Чем отличается от Кебаба из баранины","Адана — телятина; Кебаб — баранина + курдюк"]]},
+      {name:"Кебаб из баранины", gram:"за 100г", time:20, desc:"Сочная люля-кебаб из рубленой баранины.",
+       comp:["фарш баранины","лаваш","маринованный красный лук в уксусе с укропом","зёрна граната","соус Татахи","армянский острый перец"],
+       marinade:"мякоть баранины, лук, соль, чёрный перец, курдюк, специи", takeaway:true,
+       facts:[["Из какого фарша","из баранины (с курдюком)"]]},
+      {name:"Утка Магре", gram:"кратно 200г (200/400)", time:20, desc:"Утиное филе в медово-горчичном маринаде, с брусничным соусом. Первые в России со шашлыком из утки.",
+       comp:["утиное филе","микс зелени","тесто на мацони","брусничный соус","маринованный красный лук с укропом","гранат"],
+       marinade:"мёд, горчица, растительное масло, сухой чеснок, лук", takeaway:false,
+       facts:[["Порции","кратно 200г (200/400) — на шампур 300г НЕ помещается"],["Почему не на вынос","утиное мясо теряет качество, становится как печень"],["Откуда метод Магре","французская провинция Гасконь"],["Чем первые в России","шашлык из утки на огне"]]},
+      {name:"Жау Бауур", gram:"за 100г", time:25, desc:"Балкарское блюдо: баранья печень в жировой сетке, прожарка medium.",
+       comp:["баранья печень","баранья жировая сетка","соль","чёрный перец","лаваш","маринованный красный лук в уксусе с укропом","зёрна граната","соус Тузлук"],
+       takeaway:true,
+       facts:[["«жау» и «бауур» означают","жау = жир/масло, бауур = печень"],["Прожарка","medium (возможен кровяной сок — норма, предупредить)"],["Какой соус","Тузлук"]]},
+      {name:"Огненные язычки", gram:"порция 4 шт 🌶", time:25, desc:"Язычки ягнёнка в аджике, с двумя соусами.",
+       comp:["язычки ягнёнка","лаваш","маринованный красный лук в уксусе с укропом","зёрна граната","соус Тузлук","ореховый соус (ореховая трава, кефир, чеснок, сметана)"],
+       marinade:"аджика, растительное масло", takeaway:true,
+       facts:[["Как заказывается","только кратно 4 (4/8/12) — нельзя 5/6/7"],["Два соуса","Тузлук и ореховый"]]},
+      {name:"Корнеплод на костре", gram:"за 100г", time:20, desc:"Картофель бейби на костре.",
+       comp:["картофель бейби","маринованный красный лук в уксусе с зеленью","зёрна граната","паприка","соль","растительное масло"], takeaway:true,
+       facts:[["Основа","картофель бейби"]]},
+      {name:"Корнеплод с курдюком", gram:"за 100г", time:20, desc:"Картофель бейби с прослойками курдюка на костре.",
+       comp:["картофель бейби","курдюк","маринованный красный лук в уксусе с зеленью","зёрна граната","паприка","соль","растительное масло"], takeaway:true,
+       facts:[["Чем отличается от обычного корнеплода","добавлен курдюк"]]},
+      {name:"Огненный урожай", gram:"за 100г", time:20, desc:"Медовые томаты, баклажаны, перец Рамиро на костре.",
+       comp:["томаты сорта Джалила","красный перец Рамиро","баклажаны","маринованный красный лук в уксусе с укропом","оливковое масло","зёрна граната","соль"], takeaway:true,
+       facts:[["Сорт томатов","Джалила (премиальный)"],["Можно ли один вид овощей","да — томаты / перец Рамиро / баклажан через модификатор"]]},
+      {name:"Тенегрибы на огне", gram:"за 100г", time:20, desc:"Сочные шампиньоны на костре.",
+       comp:["шампиньоны","маринованный красный лук в уксусе с зеленью","зёрна граната"],
+       marinade:"домашний майонез, соль, перец", takeaway:true,
+       facts:[["Какие грибы","шампиньоны"],["Маринад","домашний майонез, соль, перец"]]}
+    ]
+  },
+
+  snacks: {
+    label: "Закуски",
+    weight: 1,
+    dishes: [
+      {name:"Сыры долин Банты", gram:"250/150г", time:20, desc:"Бедуинский набор из 5 сыров ручной работы с молочным чаем на конском щавеле.",
+       comp:["Чечил копчёный (коровье, Армения)","Голубая плесень (коровье, Франция)","Белпер Кнол (верблюжье, Швейцария)","Шевр (козье)","Матэ (коровье, адыгейский премиум)","чайный отвар на конском щавеле","белый мускатный виноград в сахарной оболочке"], takeaway:true,
+       facts:[["Чечил родом из","Армении (коровье молоко)"],["Белпер Кнол из какого молока","верблюжьего (Belp — город в Швейцарии, Knolle — клубень)"],["Шевр из какого молока","козьего (chèvre = коза)"],["Матэ — это","адыгейский твёрдый премиум-сыр (коровье)"],["Банта — это","травоядное с Татуина (молоко голубого цвета)"]]},
+      {name:"Вяленое пустынное мясо", gram:"100/50г", time:20, desc:"Деликатесы из отборного мяса, медленно высушенного.",
+       comp:["Бастурма (армянская колбаса из телятины)","Лягур (сушёное мясо телятины)","Жарума (вяленая колбаса из телятины)","солёный бараний курдюк","чипсы ржаного хлеба"],
+       sauce:"Чимичурри", takeaway:true,
+       facts:[["Лягур означает","ля = мясо, гур = сушёное (выдержка 6 мес – 3 года)"],["Жарума — это","сушёная колбаса (выдержка до полугода)"],["Бастурма означает","«прессованное мясо»"],["Какой соус","Чимичурри"]]},
+      {name:"Суккуленты Татуина", gram:"2700/50г", time:20, desc:"Изобилие свежих овощей среди песков.",
+       comp:["медовые томаты","огурцы","перец Рамиро","дайкон","редис","китайская/пекинская капуста","красный лук","перец чили","кукуруза","маринованный бамбук","морковь","сельдерей","тыква"],
+       sauce:"Трюфельный соус", takeaway:true,
+       facts:[["Что НЕ нарезается","дайкон, тыква, кукуруза"],["Неизменная основа набора","томаты, огурцы, перец Рамиро"],["Как отдаётся на вынос","корзина в плёнке + крафт-пакет"]]},
+      {name:"Подпечённый виноград и оливки", gram:"170г", time:20, desc:"Сладость винограда и солоноватость оливок, запечённых до карамельного блеска.",
+       comp:["белый мускатный виноград (на углях)","оливки гриль","оливковое масло","вяленые томаты"], takeaway:true,
+       facts:[["В чём маринуются оливки","лимонный сок и оливковое масло"]]},
+      {name:"Рубленое мясо Фрименов", gram:"120/15г", time:20, desc:"Тартар из мраморной телятины с вагю, трюфельным маслом, пармезаном.",
+       comp:["вырезка мраморной телятины","вагю","лук шалот","соус Ворчестер","вяленые томаты","дижонская горчица","трюфельное масло","куриный желток","соевый соус","соль","чёрный перец","лук сибулет","пармезан","чипсы ржаного хлеба"], takeaway:false,
+       facts:[["В чём подаётся","в голове каррука («Челюсть»), тарелка холодная"],["За сколько съесть","за 5 минут"],["Почему не на вынос","сырое мясо, быстро теряет свежесть"],["Куда голову после подачи","в холодный цех (НЕ на мойку)"]]},
+      {name:"Карпаччо из пустынной капусты", gram:"100г", time:15, desc:"Тончайшие лепестки цветной капусты с трюфельным соусом.",
+       comp:["цветная капуста","трюфельный соус","свежий трюфель","четверговая чёрная соль","пармезан"], takeaway:false,
+       facts:[["Почему не на вынос","теряет текстуру и вкус"]]},
+      {name:"Нутовый субстрат", gram:"160/60г", time:15, desc:"Хумус с томлёным фаршем ягнёнка, греческим йогуртом и маринованным бамбуком.",
+       comp:["хумус из нута","фарш баранины","маринованный бамбук","греческий йогурт","кинза","лепёшка роти"], takeaway:true,
+       facts:[["Кнопка модификации","«НЕ нутовый субстрат» — можно БЕЗ кинзы, БЕЗ фарша ягнёнка"]]},
+      {name:"Хариса", gram:"180/60г 🌶", time:15, desc:"Паста из печёных перцев Рамиро с маскарпоне и вялеными томатами.",
+       comp:["хариса (печёный перец Рамиро, маскарпоне, вяленые томаты, чили, панко сухари — глютен)","оливковое масло","бальзамик-крем","орехи кешью","лепёшка роти"], takeaway:true,
+       facts:[["Что рекомендуем сделать","перемешать масло с бальзамиком"],["Где глютен","панко сухари в харисе"]]},
+      {name:"Дар Оазиса", gram:"160г 🌶", time:15, desc:"Запечённый перец Рамиро, начинённый цахтоном и нежным сыром.",
+       comp:["микс зелени","красный перец Рамиро","цахтон","сыр Креметта","орехи кешью","четверговая чёрная соль","зелёное масло"], takeaway:true,
+       facts:[["Чем начинён перец","цахтон и нежный сыр Креметта"]]},
+      {name:"Хоровац", gram:"200г 🌶", time:15, desc:"Тёплая закуска из овощей, запечённых на углях с дымком.",
+       comp:["томаты","баклажаны","перец Рамиро","перец чили","кинза","свежий красный лук","соль","чёрный перец","оливковое масло"], takeaway:true,
+       facts:[["Национальное блюдо","Армении"],["Форма чипсов из лаваша","треугольная, без дефектов"]]},
+      {name:"Кора спайса", gram:"180/50г", time:15, desc:"Тающий домашний сыр с зеленью в лаваше со сметано-чесночным тузлуком.",
+       comp:["натуральный сыр ручной работы","зелёный лук","японский майонез","соус тузлук"], takeaway:true,
+       facts:[["«Кора» означает","запечённая оболочка"],["«Спайса» означает","смесь сыра и зелени внутри"]]},
+      {name:"Панир на огне", gram:"160г", time:25, desc:"Индийский сыр, пропитанный гранатовым соком (рубиновый), с клубничной сальсой.",
+       comp:["сыр Панир","маринад (гранатовый сок, трюфельное масло, мёд)","сальса из клубники","крошка фисташки","микс зелени"], takeaway:false,
+       facts:[["Температура подачи","комнатная, слегка тёплая"],["Какой цвет должен быть","насыщенный рубиновый"],["Почему не на вынос","потеряет текстуру и вкус"]]},
+      {name:"Бутоны Цикара", gram:"250г", time:20, desc:"Маринованные артишоки, обожжённые на огне, на подушке из харисы.",
+       comp:["маринованные артишоки","хариса","зелёное масло","фисташка","микро-зелень/цветы"], takeaway:true,
+       facts:[["Что это за блюдо","маринованные артишоки гриль"],["Какая часть артишока съедобна","вся"]]},
+      {name:"Ферментированные щёки каррука", gram:"190г", time:15, desc:"Ферментированные бычьи щёки — плотные, глубокие. Деликатес «не для всех».",
+       comp:["ферментированные говяжьи щёки","мини-картофель в специях","укроп","маринованный красный лук"], takeaway:true,
+       facts:[["Когда готовят","только осенью"],["Сколько вымачивают голову","14 дней в молочной сыворотке"],["Что рекомендуем добавить","дижонскую горчицу (доп. позиция)"]]}
+    ]
+  },
+
+  salads: {
+    label: "Салаты",
+    weight: 1,
+    dishes: [
+      {name:"Зелёный А110%", gram:"350г", time:20, desc:"Витаминный микс трав с яблоком, солёной сливой, изюмом и ореховой заправкой. С мини-шашлыком из овощей.",
+       comp:["микс салата","ореховый соус","зелёное яблоко","овощной шашлык (цукини, брокколи, абельмош/бамия)","белый изюм","солёная слива","свежие огурцы","кунжут кимчи"],
+       sauce:"Ореховый соус (на А110%)", takeaway:true,
+       facts:[["Сколько витамина А","110% суточной нормы"],["Какое яблоко","зелёное (не жёлтое/чёрное)"],["Что в овощном шашлыке","цукини, брокколи, абельмош/бамия"],["Что НЕЛЬЗЯ изменить","микс зелени и шашлычок"],["Абельмош — это","бамия / гибискус съедобный"]]},
+      {name:"Зелёный B12", gram:"230г", time:20, desc:"Телячья вырезка с вешенками, миксом зелени, черри и красным луком.",
+       comp:["вырезка телятины","микс зелени","руккола","красные черри","вешенки","соус Терияки","соус для вешенок","пармезановый чипс","красный лук"],
+       sauce:"Терияки / соус для вешенок", takeaway:true,
+       facts:[["Соус для вешенок","каперсы, соевый соус, чеснок, дижонская горчица, лимон, оливковое масло"],["Как делается пармезановый чипс","из пармезана на сухой сковороде"],["Чем богата телятина","витамином B12"]]},
+      {name:"Благодать Фрименов", gram:"290г", time:15, desc:"Фермерская буррата с медовыми томатами и клубникой.",
+       comp:["фермерская буррата","медовые томаты","свежая клубника","красный лук","зелёное масло","чёрная четверговая соль","крем-бальзамик","микро-зелень/цветы"], takeaway:true,
+       facts:[["Какой сыр","буррата (упругая снаружи, текучий крем внутри)"],["Зелёное масло — это","оливковое масло + петрушка + шпинат"]]},
+      {name:"Песчаные баклажаны", gram:"300г", time:15, desc:"Хрустящие баклажаны с томатами в персиковом кисло-сладком соусе.",
+       comp:["баклажаны (крахмальная панировка)","медовые томаты","кисло-сладкий соус (персики + кунжутное масло)","кинза","кунжут кимчи","ажурные хрустящие чипсы"], takeaway:true,
+       facts:[["За сколько съесть","в первые 3 минуты (потом хруст исчезает)"],["Панировка","крахмальная"],["Из чего ажурные чипсы","сок моркови, масло, вода, мука"]]},
+      {name:"Фаттуш", gram:"230г", time:15, desc:"Левантийский овощной салат с запечённым лавашом.",
+       comp:["медовые томаты","свежий огурец","красный лук","редис","микс зелени (с кинзой!)","запечённый перец Рамиро","авторский соус","запечённый лаваш","четверговая соль"], takeaway:true,
+       facts:[["Откуда родом","из Ливана"],["«Фатт» означает","«крошить», «ломать на куски»"],["Чем отличается микс зелени","в Фаттуше добавлена кинза"],["Авторский соус","оливковое масло, сок лимона, дижонская горчица"]]}
+    ]
+  },
+
+  bread: {
+    label: "Тесто / Хычыны",
+    weight: 1,
+    dishes: [
+      {name:"Хычын балкарский (картофель+сыр)", gram:"180г", time:15, desc:"Закрытая тонкая лепёшка из бездрожжевого теста.",
+       comp:["бездрожжевое тесто (мука, вода, соль, масло)","отварной картофель","балкарский сыр","сливочное масло"], takeaway:true,
+       facts:[["«ХЫЧ» означает","«крест» — делим на 4 части"],["Тесто","бездрожжевое (мука, вода, соль, масло)"],["Какие пятна недопустимы","чёрные (коричневые — ещё допустимы)"]]},
+      {name:"Хычын балкарский (сыр+зелень)", gram:"180г", time:15, desc:"Вариант с сыром, творогом и зеленью.",
+       comp:["бездрожжевое тесто","зелень (крапива, свекольная ботва, зелёный лук, укроп)","балкарский сыр","творог","сливочное масло"], takeaway:true,
+       facts:[["Какая зелень","крапива, свекольная ботва, зелёный лук, укроп"],["Что кроме сыра","творог"]]},
+      {name:"Хычын карачаевский", gram:"410г", time:20, desc:"Открытый сочный мясной пирог в дровяной печи.",
+       comp:["дрожжевое тесто (мука, молоко, дрожжи, сливочное масло, яйцо, соль, сахар)","фарш (баранина или телятина)","кинза","сливочное масло"], takeaway:true,
+       facts:[["Тесто","дрожжевое (мука, молоко, дрожжи, масло, яйцо, соль, сахар)"],["Чем режут","ролик-нож, на 4 части"],["Варианты начинки","фарш баранины или телятины (телятина — пикантный)"]]},
+      {name:"Хачапури на огне", gram:"250/50г", time:20, desc:"Сулугуни в тесте ручной работы, на углях.",
+       comp:["сыр сулугуни","тесто (мука, яйцо, молоко, сливочное масло, соль, вода)","соус тузлук","яичный желток (смазка)"], takeaway:true,
+       facts:[["Какой сыр","сулугуни"],["Чем смазывают перед жаркой","яичным желтком"],["Какой соус","тузлук"]]},
+      {name:"Ламаджо", gram:"210/50г", time:20, desc:"Армянская «пицца» — тонкое хрустящее тесто и мясная начинка.",
+       comp:["бездрожжевое тесто (мука, вода, соль)","начинка (говядина, лук, болгарский перец, томатная паста, острый перец, кориандр, чеснок, аджика)","томаты","кинза","обожжённый лимон"], takeaway:true,
+       facts:[["Что за блюдо","армянская версия пиццы"],["Мясо в начинке","говядина"]]},
+      {name:"Халюж с вагю", gram:"150/50г", time:20, desc:"Адыгейский мини-чебурек: мраморная телятина с вагю, креветочный биск, чёрная икра.",
+       comp:["тесто (мука, вода, яйцо, соль)","начинка (вагю, мраморная телятина)","соус Бииск (отдельно)","чёрная икра","микро-цветы"],
+       sauce:"Бииск", takeaway:true,
+       facts:[["Соус Бииск","бульон из креветок, сливки, соль (подаётся отдельно)"],["Что сверху","чёрная икра"]]},
+      {name:"Лепёшка путника", gram:"110г", time:15, desc:"Горячая воздушная лепёшка из печи с маслом, орехами и пудрой из маслин.",
+       comp:["дрожжевое тесто (мука, дрожжи, мацони, соль, сахар)","оливковое масло","ореховый микс (фисташка, грецкий орех, подсолнечные семечки)","кунжут-кимчи","пудра из маслин"], takeaway:true,
+       facts:[["Что в ореховом миксе","фисташка, грецкий орех, подсолнечные семечки"],["На чём тесто","на мацони"]]}
+    ]
+  },
+
+  sides: {
+    label: "Гарниры",
+    weight: 1,
+    dishes: [
+      {name:"Батат фри", gram:"150г", time:10, desc:"Хрустящий батат фри, сладкий, с пряной ноткой.",
+       comp:["батат","специи","растительное масло"], takeaway:true,
+       facts:[["Можно ли без специй","да — для ребёнка"],["Батат — это","сладкий картофель"]]},
+      {name:"Зелёные грозди", gram:"250г", time:15, desc:"Запечённые брокколи в кунжутно-сливочном соусе с кимчи.",
+       comp:["брокколи","кунжутно-сливочный соус (кунжут + сливки)","специя кимчи"], takeaway:true,
+       facts:[["Какой соус","кунжутно-сливочный (кунжут + сливки)"],["Что можно убрать","соус или специю кимчи"]]},
+      {name:"Белые грозди", gram:"250г", time:15, desc:"Запечённая цветная капуста в кунжутно-сливочном соусе с кимчи.",
+       comp:["цветная капуста","кунжутно-сливочный соус (кунжут + сливки)","специя кимчи"], takeaway:true,
+       facts:[["Основа","цветная капуста"],["Чем отличается от Зелёных гроздей","цветная капуста вместо брокколи"]]},
+      {name:"Пюре из корнеплодов", gram:"150г", time:15, desc:"Воздушное сливочное картофельное пюре.",
+       comp:["картофель","молоко","сливочное масло","соль","микро-зелень"], takeaway:true,
+       facts:[["Что можно убрать","микро-зелень"]]},
+      {name:"Печёный корнеплод", gram:"200г", time:15, desc:"Запечённый картофель бейби со специями.",
+       comp:["картофель бейби","специи (соль, паприка, сухой чеснок)","растительное масло"], takeaway:true,
+       facts:[["Специи","соль, паприка, сухой чеснок"]]},
+      {name:"Запечённый тростник", gram:"200г", time:15, desc:"Маринованные стебли бамбука, запечённые до хрусткости.",
+       comp:["стебли маринованного бамбука","оливковое масло","соль","чёрный перец","чеснок"], takeaway:true,
+       facts:[["Какие соусы раскрывают вкус","ореховый и трюфельный"],["Что приносим даже при отказе","соус как комплимент"]]}
+    ]
+  },
+
+  desserts: {
+    label: "Десерты",
+    weight: 1,
+    dishes: [
+      {name:"Тускенский урожай", gram:"—", time:15, desc:"Десерт-минимализм кочевников: кедровые орехи, брусника, мёд.",
+       comp:["кедровые орехи","свежемороженая брусника","мёд"], takeaway:false,
+       facts:[["Температура подачи","холодным, −6°C (предупредить гостя)"],["Как есть","смешивая все ингредиенты (баланс)"],["Почему не на вынос","подаётся холодным"]]},
+      {name:"Хруст пустыни", gram:"—", time:15, desc:"Десерт из Кабардино-Балкарии: хрустящее тесто + взбитый сливочный крем.",
+       comp:["тесто (мука, вода, сода, сахар)","крем (растительные безлактозные сливки, сахар)","свежая малина","голубика"], takeaway:true,
+       facts:[["Как подаётся (интерактив)","в перчатках, сжать ладонями до хруста, есть руками"],["Штраф за скол тарелки","888 ₽"],["Откуда родом","Кабардино-Балкария"]]},
+      {name:"Медовик «Ржавое время»", gram:"—", time:15, desc:"Медовые коржи со сметанным кремом на гречишном мёде под шоколадной «ржавчиной», с йогуртовым сорбетом.",
+       comp:["медовые коржи (с мукой грецкого ореха)","крем сметанный с ванилью на гречишном мёде","сорбет из йогурта","крошка коржа","шоколадный цилиндр («ржавчина»)"], takeaway:false,
+       facts:[["Какой мёд","гречишный (в коржах и креме)"],["Почему не на вынос","сорбет растает"],["Что создаёт «ржавчину»","шоколад на металлическом цилиндре"]]},
+      {name:"Эклер «Пробуждение»", gram:"—", time:15, desc:"Эклер с тёмной оболочкой и карамельным кремом Guinness, крем-чиз и тёплая грушевая начинка.",
+       comp:["заварное тесто","кракелин (тёмная оболочка с активированным углём)","карамельный крем с пивом Guinness б/а","тёплая начинка из груши","сметанный крем-чиз","хрустящий крамбл с солью","декор тёмного шоколада"], takeaway:true,
+       facts:[["Что в кракелине даёт цвет","активированный уголь"],["Какое пиво в креме","Guinness б/а"],["Что делают при подаче","поливают тёплой грушей на крем-чиз"]]},
+      {name:"Жар от костра", gram:"—", time:15, desc:"Шу-«вулкан» с шоколадным чизкейком и вишней, с мороженым вишня-Oreo. Дым из сухого льда.",
+       comp:["мороженое вишня-Oreo (с бобами тонка)","чизкейк тёмного шоколада","сладкая посыпка","шу с кракелином","тёплая начинка из вишни","нугатин","орех макадамия"], takeaway:false,
+       facts:[["Бобы тонка — это","«усиленная ваниль»: ваниль + миндаль + карамель"],["Чем создаётся дым","сухим льдом"],["Что имитирует шу","дрова (обугленная оболочка)"],["Почему не на вынос","мороженое растает"]]},
+      {name:"Солнца Близнецы", gram:"50г", time:10, desc:"НЕТ в меню — комплимент/доп. продажа. Две конфеты: светлая (лайм) и тёмная (карамель).",
+       comp:["белая конфета (белый шоколад, сливки, цедра и сок лайма, рисовые шарики, рисовые чипсы)","тёмная конфета (белый шоколад, сливки, пиво Guinness б/а, взрывная карамель, рис. шарики, рис. чипсы)","песочное тесто для подачи"], takeaway:true,
+       facts:[["Есть ли в меню","нет — комплимент / доп. продажа"],["Что даёт тёмный оттенок","уваренное пиво Guinness б/а"]]}
+    ]
+  }
+};
+
+// общие правила
+const RULES = {
+  notTakeaway: ["Рубленое мясо Фрименов","Карпаччо из пустынной капусты","Панир на огне","Утка Магре","Тускенский урожай","Медовик «Ржавое время»","Жар от костра"],
+  mangalBase: "лаваш + маринованный красный лук + зёрна граната + соус Татахи",
+  gramRule: "минимум 200г, кратно 100г, цена за 100г, спросить «200, 300 или больше?»",
+  gramExceptions: [["Утка Магре","кратно 200г (200/400) — на шампур 300г не помещается"],["Огненные язычки","порциями по 4 шт (4/8/12)"]]
+};
+
+// ============ УТИЛИТЫ ============
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function sample(a,n){return shuffle(a).slice(0,n)}
+const CATKEYS=Object.keys(MENU);
+function allDishes(catKeys){let l=[];for(const k of catKeys){const c=MENU[k];if(!c)continue;for(const d of c.dishes)l.push({...d,_cat:k,_catLabel:c.label});}return l;}
+const ALLD=allDishes(CATKEYS);
+function dishByName(n){return ALLD.find(d=>d.name===n);}
+
+// ---- нормализация состава: вытащить "ядро" ингредиента из строки с пояснениями
+function coreIng(s){
+  return s.replace(/\(.*?\)/g,'')            // убрать скобки
+          .replace(/[—–-].*$/,'')            // убрать пояснение после тире
+          .replace(/\s+/g,' ').trim();
+}
+// пул ингредиентов по категории (для правдоподобных дистракторов)
+function catIngPool(cat){
+  const s=new Set();
+  MENU[cat].dishes.forEach(d=>(d.comp||[]).forEach(c=>s.add(coreIng(c))));
+  return [...s].filter(Boolean);
+}
+const CAT_POOL={};CATKEYS.forEach(k=>CAT_POOL[k]=catIngPool(k));
+const GLOBAL_POOL=[...new Set(ALLD.flatMap(d=>(d.comp||[]).map(coreIng)))].filter(Boolean);
+
+// ============ АЛЛЕРГЕНЫ ============
+// детект по ключевым словам во всём тексте блюда (состав + маринад + соус)
+const ALLERGENS=[
+  {key:"глютен",label:"Глютен (злаки)",re:/глютен|мук[аи]|лаваш|хлеб|сухар|панко|тесто|лепёшк|бородинск|роти|макадам|крамбл|корж|эклер|кракелин|нугатин|пшеничн|вафл/i},
+  {key:"молочное",label:"Молочное",re:/молок|сливк|сметан|сыр|кефир|йогурт|маскарпоне|буррат|творог|масло сливочн|креметт|сулугуни|панир|мацони|чечил|шевр|матэ|пармезан/i},
+  {key:"орехи",label:"Орехи",re:/кешью|фисташк|грецк|миндал|кедров|орех|макадамия|каштан|нугатин|бобы тонка/i},
+  {key:"рыба/морепродукты",label:"Рыба и морепродукты",re:/креветк|икра|ворчестер|рыб|биск|бииск/i},
+  {key:"яйцо",label:"Яйцо",re:/яйц|желт|майонез|меренг|заварн/i},
+  {key:"кунжут",label:"Кунжут",re:/кунжут|тахин|кунжутн/i},
+  {key:"алкоголь",label:"Алкоголь",re:/водк|пиво|guinness|гиннес|бурбон|вино|мирин/i},
+];
+function dishText(d){return [d.desc,(d.comp||[]).join(' '),d.marinade||'',d.sauce||'',(d.facts||[]).map(f=>f.join(' ')).join(' ')].join(' ');}
+function dishAllergens(d){const t=dishText(d);return ALLERGENS.filter(a=>a.re.test(t)).map(a=>a.key);}
+// в каком ингредиенте аллерген (для пояснения)
+function allergenSource(d,key){
+  const a=ALLERGENS.find(x=>x.key===key);if(!a)return null;
+  for(const c of (d.comp||[])){if(a.re.test(c))return c;}
+  if(d.marinade&&a.re.test(d.marinade))return "маринад: "+d.marinade;
+  return null;
+}
+
+// ============ ТЕКСТОВАЯ ВАЛИДАЦИЯ ============
+function norm(s){return (s||'').toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я0-9 ]/gi,' ').replace(/\s+/g,' ').trim();}
+const SYN={
+  "телятина":["телятина","теленок","телячья","говядина молодая"],
+  "баранина":["баранина","ягненок","ягнёнок","барашек","мякоть ягненка"],
+  "курдюк":["курдюк","бараний жир","курдючный жир"],
+  "паприка":["паприка","паприки"],
+  "лимон":["лимон","сок лимона","лимонный","лимонный фреш","сок лайма","лайм"],
+  "чеснок":["чеснок","чесночный"],
+};
+function textMatch(input,answer){
+  const ni=norm(input), na=norm(answer);
+  if(!ni)return false;
+  if(ni===na)return true;
+  if(na.includes(ni)&&ni.length>=4)return true;
+  if(ni.includes(na)&&na.length>=4)return true;
+  // синонимы
+  for(const k in SYN){if(SYN[k].some(s=>norm(s)===na)&&SYN[k].some(s=>norm(s)===ni))return true;}
+  // если ввод — значимое слово, содержащееся среди слов ответа (вырезка телятины ⊇ телятина)
+  const stem=w=>w.length>5?w.slice(0,Math.ceil(w.length*0.75)):w;
+  const aw=na.split(' ').filter(w=>w.length>2), iwArr=ni.split(' ').filter(w=>w.length>2);
+  const awStem=aw.map(stem), iwStem=new Set(iwArr.map(stem));
+  if(iwArr.length===1 && awStem.includes(stem(iwArr[0])))return true;
+  if(aw.length){const hit=awStem.filter(w=>iwStem.has(w)).length;if(hit/awStem.length>=0.6)return true;}
+  return false;
+}
+
+// ============ ГЕНЕРАТОР ============
+const TAGLABEL={
+  comp_multi:"Состав — выбери ВСЁ",comp_text:"Состав — впиши",odd:"Лишний ингредиент",
+  allerg_multi:"Аллергены — выбери ВСЁ",allerg_which:"Аллергены",allerg_src:"Аллерген — источник",
+  sauce_multi:"Состав соуса",marinade:"Маринад",fact:"Деталь",fact_text:"Впиши ответ",
+  which:"Угадай блюдо",sauce:"Соус к блюду",takeaway:"Вынос",gram:"Граммовка",twin:"Различи",rule:"Правило"};
+let QID=0;
+function mk(o){o.id=++QID;return o;}
+
+// правдоподобные дистракторы: сначала из той же категории, потом из соседних
+function plausibleDistractors(d, exclude, n){
+  const have=new Set([...exclude].map(coreIng));
+  let pool=(CAT_POOL[d._cat]||[]).filter(x=>!have.has(x));
+  pool=shuffle(pool);
+  if(pool.length<n){const extra=shuffle(GLOBAL_POOL.filter(x=>!have.has(x)&&!pool.includes(x)));pool=pool.concat(extra);}
+  return pool.slice(0,n);
+}
+
+// --- мультивыбор состава: выбрать ВСЕ настоящие из набора (правда+правдоподобная ложь)
+function qCompMulti(d){
+  if(!d.comp||d.comp.length<3)return null;
+  const reals=sample(d.comp.map(coreIng).filter(Boolean), Math.min(4, d.comp.length));
+  const distN=Math.min(3, Math.max(2, 5-reals.length));
+  const distract=plausibleDistractors(d, new Set(d.comp.map(coreIng)), distN);
+  if(distract.length<2)return null;
+  const opts=shuffle([...reals,...distract]);
+  return mk({type:"multi",tag:"comp_multi",cat:d._cat,catLabel:d._catLabel,dish:d.name,
+    q:`Отметь <b>все</b> ингредиенты, которые входят в «${d.name}»:`,
+    options:opts, answers:reals,
+    expl:`Полный состав «${d.name}»: ${d.comp.join(', ')}.`,
+    tip:compTip(d)});
+}
+// --- мультивыбор состава соуса (по твоему примеру)
+function qSauceMulti(d){
+  // d тут — соус из категории sauces
+  if(d._cat!=='sauces'||!d.comp||d.comp.length<3)return null;
+  const reals=d.comp.map(coreIng).filter(Boolean);
+  const realsShown = reals.length>5?sample(reals,5):reals;
+  const distract=plausibleDistractors(d, new Set(reals), 3);
+  if(distract.length<2)return null;
+  return mk({type:"multi",tag:"sauce_multi",cat:'sauces',catLabel:'Соусы',dish:d.name,
+    q:`Соус «${d.name}». Отметь <b>все</b> ингредиенты его состава:`,
+    options:shuffle([...realsShown,...distract]), answers:realsShown,
+    expl:`Состав «${d.name}»: ${d.comp.join(', ')}.`,
+    tip:d.facts&&d.facts.length?`${d.facts[0][0]}: ${d.facts[0][1]}.`:""});
+}
+// --- текстовый ввод: один ингредиент / факт
+function qCompText(d){
+  if(!d.comp||d.comp.length<2)return null;
+  const ing=coreIng(pick(d.comp));
+  if(!ing||ing.length<3)return null;
+  return mk({type:"text",tag:"comp_text",cat:d._cat,catLabel:d._catLabel,dish:d.name,
+    q:`Впиши <b>один любой</b> ключевой ингредиент блюда «${d.name}»:`,
+    accept:d.comp.map(coreIng).filter(Boolean),
+    expl:`Состав «${d.name}»: ${d.comp.join(', ')}.`,
+    tip:`Подойдёт любой из состава. ${compTip(d)}`});
+}
+function qFactText(d){
+  if(!d.facts||!d.facts.length)return null;
+  const f=pick(d.facts);
+  if(f[1].length>40)return null; // короткие факты только
+  return mk({type:"text",tag:"fact_text",cat:d._cat,catLabel:d._catLabel,dish:d.name,
+    q:`«${d.name}»: ${f[0]}? <span class="hintline">впиши ответ</span>`,
+    accept:[f[1]],
+    expl:`«${d.name}»: ${f[0]} — ${f[1]}.`,tip:d.desc});
+}
+// --- аллергены: выбрать все
+function qAllergMulti(d){
+  const has=dishAllergens(d);
+  if(!has.length)return null;
+  const hasLabels=has.map(k=>ALLERGENS.find(a=>a.key===k).label);
+  const notLabels=ALLERGENS.filter(a=>!has.includes(a.key)).map(a=>a.label);
+  const distract=sample(notLabels, Math.min(3, notLabels.length));
+  const showReal=hasLabels.length>4?sample(hasLabels,4):hasLabels;
+  const srcLines=has.map(k=>{const s=allergenSource(d,k);return s?`${ALLERGENS.find(a=>a.key===k).label} — ${s}`:ALLERGENS.find(a=>a.key===k).label;});
+  return mk({type:"multi",tag:"allerg_multi",cat:d._cat,catLabel:d._catLabel,dish:d.name,
+    q:`Какие аллергены есть в «${d.name}»? Отметь <b>все</b>:`,
+    options:shuffle([...showReal,...distract]), answers:showReal,
+    expl:`Аллергены в «${d.name}»: ${srcLines.join('; ')}.`,
+    tip:`Состав: ${(d.comp||[]).join(', ')}.`});
+}
+// --- аллерген: да/нет по конкретному
+function qAllergWhich(d){
+  const has=dishAllergens(d);
+  const target=pick(ALLERGENS);
+  const present=has.includes(target.key);
+  const src=present?allergenSource(d,target.key):null;
+  return mk({type:"single",tag:"allerg_which",cat:d._cat,catLabel:d._catLabel,dish:d.name,
+    q:`Есть ли <b>${target.label.toLowerCase()}</b> в блюде «${d.name}»?`,
+    options:["Да, есть","Нет, отсутствует"], answer:present?"Да, есть":"Нет, отсутствует", keep:true,
+    expl:present?`Да: ${target.label} — ${src||'присутствует'}.`:`Нет, в «${d.name}» нет «${target.label.toLowerCase()}».`,
+    tip:`Все аллергены блюда: ${has.length?has.join(', '):'нет из списка'}. Состав: ${(d.comp||[]).join(', ')}.`});
+}
+// --- аллерген: в каком ингредиенте источник
+function qAllergSrc(d){
+  const has=dishAllergens(d);
+  if(!has.length)return null;
+  const key=pick(has);const src=allergenSource(d,key);
+  if(!src)return null;
+  const lab=ALLERGENS.find(a=>a.key===key).label;
+  const srcCore=coreIng(src.replace(/^маринад:\s*/,''));
+  // дистракторы — другие ингредиенты этого же блюда, где данного аллергена нет
+  const a=ALLERGENS.find(x=>x.key===key);
+  const safe=(d.comp||[]).map(coreIng).filter(c=>c&&c!==srcCore&&!a.re.test(c));
+  if(safe.length<3)return null;
+  const wrong=sample(safe,3);
+  return mk({type:"single",tag:"allerg_src",cat:d._cat,catLabel:d._catLabel,dish:d.name,
+    q:`В каком ингредиенте «${d.name}» содержится <b>${lab.toLowerCase()}</b>?`,
+    options:shuffle([srcCore,...wrong]),answer:srcCore,
+    expl:`${lab} в «${d.name}» — это «${src}».`,
+    tip:`Все аллергены блюда: ${has.join(', ')}. Состав: ${(d.comp||[]).join(', ')}.`});
+}
+// --- лишний (single, правдоподобные)
+function qOdd(d){
+  if(!d.comp||d.comp.length<3)return null;
+  const odd=plausibleDistractors(d,new Set(d.comp.map(coreIng)),1)[0];
+  if(!odd)return null;
+  const reals=sample(d.comp.map(coreIng).filter(Boolean),3);
+  return mk({type:"single",tag:"odd",cat:d._cat,catLabel:d._catLabel,dish:d.name,
+    q:`Что из перечисленного <b>НЕ входит</b> в «${d.name}»?`,
+    options:shuffle([odd,...reals]),answer:odd,
+    expl:`В «${d.name}» нет «${odd}». Состав: ${d.comp.join(', ')}.`,tip:compTip(d)});
+}
+// --- угадай блюдо (имя только после ответа)
+function qWhich(d){
+  const others=ALLD.filter(x=>x.name!==d.name);
+  // дистракторы из той же категории — труднее
+  let pool=others.filter(x=>x._cat===d._cat);if(pool.length<3)pool=others;
+  const wrong=sample(pool,3).map(x=>x.name);
+  if(wrong.length<3)return null;
+  const useComp=Math.random()<0.6&&d.comp;
+  const hint=useComp?`Состав: ${sample(d.comp,Math.min(4,d.comp.length)).join(', ')}…`:d.desc;
+  return mk({type:"single",tag:"which",cat:d._cat,catLabel:d._catLabel,dish:d.name,hideDish:true,
+    q:`Угадай блюдо:<span class="hintline">${hint}</span>`,
+    options:shuffle([d.name,...wrong]),answer:d.name,
+    expl:`Это «${d.name}». ${d.desc}`,tip:d.comp?`Состав: ${d.comp.join(', ')}.`:""});
+}
+// --- маринад (мангал)
+function qMarinade(d){
+  if(!d.marinade)return null;
+  const parts=d.marinade.split(',').map(s=>s.trim()).filter(Boolean);
+  if(parts.length<2)return null;
+  const reals=parts.slice(0,Math.min(4,parts.length));
+  const others=ALLD.filter(x=>x.marinade&&x.name!==d.name).flatMap(x=>x.marinade.split(',').map(s=>s.trim()));
+  const distract=sample([...new Set(others.filter(x=>!parts.includes(x)))],3);
+  if(distract.length<2)return null;
+  return mk({type:"multi",tag:"marinade",cat:d._cat,catLabel:d._catLabel,dish:d.name,
+    q:`Что входит в <b>маринад</b> блюда «${d.name}»? Отметь всё:`,
+    options:shuffle([...reals,...distract]),answers:reals,
+    expl:`Маринад «${d.name}»: ${d.marinade}.`,tip:`Состав блюда: ${(d.comp||[]).join(', ')}.`});
+}
+// --- соус к блюду
+function qSauce(d){
+  if(!d.sauce)return null;
+  const all=["Тузлук","Цахтон","Татахи","Чимичурри","Бииск","Брусничный соус","Трюфельный соус","Восточный соус","Ореховый соус"];
+  const wrong=sample(all.filter(s=>!d.sauce.includes(s.split(' ')[0])),3);
+  return mk({type:"single",tag:"sauce",cat:d._cat,catLabel:d._catLabel,dish:d.name,
+    q:`Какой соус подаётся с «${d.name}»?`,options:shuffle([d.sauce,...wrong]),answer:d.sauce,
+    expl:`С «${d.name}»: ${d.sauce}.`,tip:d.desc});
+}
+function qTakeaway(d){
+  if(d.takeaway!==true&&d.takeaway!==false)return null;
+  const ans=d.takeaway?"Да, готовим на вынос":"Нет, НЕ на вынос";
+  let tip;
+  if(d.takeaway===false){const r=(d.facts||[]).find(f=>/вынос/i.test(f[0]));tip=`Не на вынос: ${r?r[1]:'теряет качество'}. Список «не на вынос»: ${RULES.notTakeaway.join(', ')}.`;}
+  else tip=`На вынос. НЕ на вынос только: ${RULES.notTakeaway.join(', ')}.`;
+  return mk({type:"single",tag:"takeaway",cat:d._cat,catLabel:d._catLabel,dish:d.name,
+    q:`Готовим ли «${d.name}» на вынос?`,options:["Да, готовим на вынос","Нет, НЕ на вынос"],answer:ans,keep:true,expl:tip,tip:d.desc});
+}
+
+function compTip(d){let t=`Время: ${d.time} мин · ${d.gram}.`;if(d.marinade)t+=` Маринад: ${d.marinade}.`;if(d.takeaway===false)t+=` ⚠ НЕ на вынос.`;return t;}
+
+// выбор типа вопроса для блюда — с упором на состав и аллергены
+function genQuestion(d){
+  // веса типов: состав и аллергены — большинство; "угадай блюдо" — редко
+  const bag=[];
+  const add=(fn,w)=>{for(let i=0;i<w;i++)bag.push(fn);};
+  add(qCompMulti,6); add(qCompText,4); add(qOdd,2);
+  add(qAllergMulti,4); add(qAllergWhich,4); add(qAllergSrc,2);
+  if(d._cat==='sauces')add(qSauceMulti,8);
+  if(d.marinade)add(qMarinade,6);
+  add(qFactText,2); add(qWhich,1);
+  if(d.sauce)add(qSauce,1);
+  add(qTakeaway,1);
+  for(let i=0;i<10;i++){const fn=pick(bag);const q=fn(d);if(q)return q;}
+  return null;
+}
+
+// ловушки (single, правдоподобные)
+let TW=0;
+function twin(cat,q,answer,wrong,expl,tip){return mk({type:"single",tag:"twin",cat,catLabel:MENU[cat]?MENU[cat].label:'',dish:'',hideDish:true,q,answer,options:shuffle([answer,...wrong]),expl,tip});}
+function twinQuestions(){return [
+  twin("mangal","Из какого фарша готовится <b>Адана-кебаб</b>?","телятина (с чили и болгарским перцем)",["баранина с курдюком","говядина с аджикой","смесь баранины и телятины"],"Адана = ТЕЛЯТИНА. Кебаб из баранины = баранина + курдюк.","Различай: Адана пикантный за счёт чили и болгарского перца."),
+  twin("mangal","С какой зеленью маринуется лук в <b>Вырезке мраморной телятины</b>?","базилик, мята, петрушка",["базилик, мята, укроп","укроп и кинза","петрушка и зелёный лук"],"Телятина (и Уч-панжа) — базилик/мята/петрушка. Укроп — у баранины/курицы/печени.","Дистракторы тоже «зелёные» — отличие в наборе трав."),
+  twin("snacks","Из чего <b>зелёное масло</b>?","оливковое масло, петрушка, шпинат",["оливковое масло, петрушка, укроп","оливковое масло, базилик, шпинат","оливковое масло, кинза, петрушка"],"Зелёное масло = масло + петрушка + шпинат.","Все варианты правдоподобны — запомни точную пару трав."),
+  twin("sauces","Что НЕ входит в соус для вешенок (Зелёный B12)?","уксус",["каперсы","лимон","дижонская горчица"],"Кислинку даёт ЛИМОН. Состав: каперсы, соевый соус, чеснок, дижонская горчица, лимон, оливковое масло.","Кислинка в авторских соусах — от лимона/лайма, не уксуса."),
+  twin("bread","Тесто какого хычына бездрожжевое?","балкарский",["карачаевский","оба бездрожжевые","оба дрожжевые"],"Балкарский — бездрожжевое (мука, вода, соль, масло). Карачаевский — дрожжевое богатое.","ХЫЧ = крест, делим на 4."),
+  twin("mangal","Утка Магре заказывается…","кратно 200г (200/400)",["кратно 100г (200/300)","порциями по 4","кратно 150г"],"Утка — кратно 200г, на шампур 300г не помещается.","Исключение из общего «кратно 100». Второе — язычки (по 4)."),
+  twin("mangal","Огненные язычки заказываются…","кратно 4 шт (4/8/12)",["кратно 100г","кратно 200г","кратно 6 шт"],"Только по 4: 4/8/12.","Утка — 200, язычки — 4, остальное — 100."),
+  twin("snacks","За сколько съесть тартар (Рубленое мясо Фрименов)?","5 минут",["3 минуты","10 минут","15 минут"],"5 минут — тартар холодный, тарелка «Челюсть» холодная.","Голову — в холодный цех, НЕ на мойку."),
+  twin("soups","Какой суп подаётся с отваром конского щавеля холодным отдельно?","Бедуинский суп",["Мерджимек","Лывжа/Шорпа","Томлёные щи"],"Бедуинский — отвар конского щавеля 150мл, холодный, запивать чаем.","Конский щавель есть ещё в чае к сырам долин Банты."),
+  twin("sauces","Что даёт цвет соусу Тузлук?","паприка",["свёкла","томатная паста","шафран"],"Тузлук: кефир, сметана, чеснок, соль, перец, ПАПРИКА.","Паприка часто выпадает при перечислении."),
+  twin("salads","Чем отличается микс зелени в Фаттуше?","добавлена кинза",["добавлена руккола","добавлен щавель","убран базилик"],"В Фаттуше к обычному миксу добавлена КИНЗА.","Обычный микс: ботва, тархун, мята, базилик, укроп, петрушка."),
+  twin("desserts","Какой десерт МОЖНО на вынос?","Эклер «Пробуждение»",["Тускенский урожай","Медовик «Ржавое время»","Жар от костра"],"Эклер — на вынос. Остальные три тают/подаются холодными.","Не на вынос среди десертов: Тускенский, Медовик, Жар от костра."),
+]; }
+
+function buildPool(catKeys,target,opts){
+  opts=opts||{};
+  const dishes=allDishes(catKeys);
+  const weighted=[];
+  dishes.forEach(d=>{let w=MENU[d._cat].weight||1;const miss=SESSION.dishMiss[d.name]||0;w+=miss*2;for(let i=0;i<w;i++)weighted.push(d);});
+  const out=[];const seen=new Set();
+  if(!opts.noTwins){shuffle(twinQuestions().filter(t=>catKeys.includes(t.cat))).forEach(t=>out.push(t));}
+  let guard=0;
+  while(out.length<target&&guard<target*80){guard++;
+    const d=pick(weighted);const q=genQuestion(d);if(!q)continue;
+    const sig=q.q+'|'+(q.answer||(q.answers||[]).join(','));if(seen.has(sig))continue;seen.add(sig);out.push(q);}
+  return shuffle(out).slice(0,target);
+}
+
+// ============ СОСТОЯНИЕ ============
+const SESSION={dishMiss:{}, totalAnswered:0, totalCorrect:0, bestStreak:0};
+let state={};
+const app=document.getElementById('app');
+const toastEl=document.getElementById('toast');
+let toastT;
+function toast(msg){toastEl.textContent=msg;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>toastEl.classList.remove('show'),1600);}
+const CATMETA={soups:['🥣','★★★ приоритет'],mangal:['🔥','★★★ приоритет'],sauces:['🫙','★★★ приоритет'],
+  snacks:['🧀','★'],salads:['🥗','★'],bread:['🫓','★'],sides:['🥔','★'],desserts:['🍯','★']};
+
+// ============ ГЛАВНАЯ ============
+function home(){
+  const acc=SESSION.totalAnswered?Math.round(SESSION.totalCorrect/SESSION.totalAnswered*100):0;
+  app.innerHTML=`
+  <header>
+    <svg class="portal" viewBox="0 0 80 80" aria-hidden="true">
+      <path class="arch" d="M16 72 V40 a24 24 0 0 1 48 0 V72"/>
+      <path class="arch" d="M26 72 V42 a14 14 0 0 1 28 0 V72"/>
+      <circle class="suns" cx="34" cy="30" r="5"/>
+      <circle class="suns" cx="48" cy="26" r="3.4"/>
+    </svg>
+    <div class="kicker">Ресторан-кантина · Петровка · подготовка к аттестации</div>
+    <h1>Tatooine</h1>
+    <p class="sub">Фантастическая кантина на пустынной планете. Учим состав, аллергены и подачу — так, как это рассказывают гостям.</p>
+  </header>
+  ${SESSION.totalAnswered?`<div class="stat">
+    <div class="s"><b>${SESSION.totalAnswered}</b><span>отвечено</span></div>
+    <div class="s"><b>${acc}%</b><span>точность</span></div>
+    <div class="s"><b>${SESSION.bestStreak}</b><span>серия</span></div></div>`:''}
+  <div class="panel">
+    <h2>Выбери путь</h2>
+    <p class="lead">Упор на состав и аллергены. Вопросы разных типов: выбор, мультивыбор и ввод ответа.</p>
+    <div class="modes">
+      <button class="mode" onclick="catScreen()"><div class="ic">🎯</div><div class="tx"><b>Тест по разделам</b><span>Один раздел или несколько — на выбор</span></div><div class="arr">→</div></button>
+      <button class="mode" onclick="quickStart(CATKEYS,5000)"><div class="ic">♾️</div><div class="tx"><b>Большой прогон</b><span>Всё меню, до 5000 вопросов</span></div><div class="arr">→</div></button>
+      <button class="mode" onclick="studyScreen()"><div class="ic">📖</div><div class="tx"><b>Изучение меню</b><span>Состав, аллергены, правила, поиск</span></div><div class="arr">→</div></button>
+      <button class="mode" onclick="mistakesStart()"><div class="ic">🔁</div><div class="tx"><b>Работа над ошибками</b><span>Блюда, где ты ошибался${Object.keys(SESSION.dishMiss).length?` (${Object.keys(SESSION.dishMiss).length})`:''}</span></div><div class="arr">→</div></button>
+    </div>
+  </div>
+  <div class="footer">«Здесь все равны, и каждый чувствует себя своим»<br><span class="byline">Разработал Решад Жук · ☀☀</span></div>`;
+  tgBack(false);
+  window.scrollTo({top:0});
+}
+
+let selCats=[];let LEN=200;
+function catScreen(){
+  if(!selCats.length)selCats=['sauces','mangal','soups'];
+  app.innerHTML=`
+  <div class="topbar"><button class="back" onclick="home()">← Назад</button><div></div></div>
+  <header style="padding:6px 0 8px"><div class="kicker">Тест по разделам</div><h1 style="font-size:34px;text-transform:none;letter-spacing:.01em;text-indent:0">Выбор раздела</h1></header>
+  <div class="panel"><h2>Разделы</h2>
+    <p class="lead">Звёзды — приоритет для аттестации. Можно выбрать несколько.</p>
+    <div class="cats" id="cats"></div>
+    <div class="row2"><button class="btn ghost" onclick="selCats=CATKEYS.slice();renderCats()">Все</button>
+      <button class="btn ghost" onclick="selCats=['sauces','mangal','soups'];renderCats()">Приоритетные</button></div>
+  </div>
+  <div class="panel"><h2>Длина прогона</h2><div class="lenrow" id="lens"></div></div>
+  <button class="btn" onclick="startSelected()">Начать тест →</button>
+  <div class="footer">Каждый ответ — с разбором и подсказкой</div>`;
+  renderCats();renderLens();tgBack(true,home);window.scrollTo({top:0});
+}
+function renderCats(){document.getElementById('cats').innerHTML=CATKEYS.map(k=>{
+  const [ic,pr]=CATMETA[k];const on=selCats.includes(k)?'on':'';
+  return `<button class="cat ${on}" onclick="toggleCat('${k}')"><div class="pr">${pr}</div>
+    <div class="ct">${ic} ${MENU[k].label}</div><div class="cn">${MENU[k].dishes.length} блюд</div></button>`;}).join('');}
+function renderLens(){document.getElementById('lens').innerHTML=[20,50,200,1000,5000].map(v=>`<button class="len ${v===LEN?'on':''}" onclick="LEN=${v};renderLens()">${v}</button>`).join('');}
+function toggleCat(k){selCats=selCats.includes(k)?selCats.filter(x=>x!==k):[...selCats,k];renderCats();}
+function startSelected(){if(!selCats.length){toast('Выбери раздел');return;}quickStart(selCats,LEN);}
+
+function quickStart(cats,len){const pool=buildPool(cats,len);
+  state={mode:'quiz',cats,pool,i:0,correct:0,wrong:[],answered:false,target:pool.length,streak:0};question();}
+function mistakesStart(){
+  const missed=Object.keys(SESSION.dishMiss).filter(k=>SESSION.dishMiss[k]>0);
+  if(!missed.length){toast('Пока нет ошибок — сначала пройди тест');return;}
+  const cats=[...new Set(ALLD.filter(d=>missed.includes(d.name)).map(d=>d._cat))];
+  let pool=buildPool(cats,Math.min(200,missed.length*8),{noTwins:true}).filter(q=>missed.includes(q.dish));
+  if(!pool.length){toast('Недостаточно данных');return;}
+  state={mode:'quiz',cats,pool,i:0,correct:0,wrong:[],answered:false,target:pool.length,streak:0};question();}
+
+// ============ ВОПРОС ============
+function question(){
+  const q=state.pool[state.i];if(!q)return results();
+  state.answered=false;state.multiSel=new Set();
+  const prog=Math.round(state.i/state.target*100);
+  const sc=state.streak>=3?`🔥 серия ${state.streak}`:(state.streak>0?`серия ${state.streak}`:'');
+  app.innerHTML=`
+  <div class="topbar">
+    <button class="back" onclick="if(state.i===0||confirm('Выйти? Прогресс теста сбросится.'))home()">← Выход</button>
+    <span class="streak ${state.streak<3?'cold':''}">${sc}</span></div>
+  <div class="bar"><i style="width:${prog}%"></i></div>
+  <div class="meta"><span>${q.catLabel} · вопрос ${state.i+1} из ${state.target}</span>
+    <span class="sc"><b>✓${state.correct}</b> · <i>✗${state.wrong.length}</i></span></div>
+  <div class="qcard">
+    <span class="qtag">${TAGLABEL[q.tag]||q.tag}</span>
+    <div class="q">${q.q}</div>
+    <div id="body"></div>
+    <div id="after"></div>
+  </div>
+  <div class="footer" id="dishfoot">${q.hideDish?'&nbsp;':''}</div>`;
+  const body=document.getElementById('body');
+  tgBack(true,()=>{ if(state.i===0||confirm('Выйти? Прогресс теста сбросится.'))home(); });
+  if(q.type==='text'){renderText(q,body);}
+  else if(q.type==='multi'){renderMulti(q,body);}
+  else {renderSingle(q,body);}
+  window.scrollTo({top:0});
+}
+
+// ---- single
+function renderSingle(q,body){
+  const ob=document.createElement('div');ob.className='opts';
+  q.options.forEach((opt,idx)=>{const b=document.createElement('button');b.className='opt';
+    b.innerHTML=`<span class="let">${String.fromCharCode(1040+idx)}</span><span>${opt}</span>`;
+    b.onclick=()=>answerSingle(opt,b);ob.appendChild(b);});
+  body.appendChild(ob);
+}
+function answerSingle(choice,btn){
+  if(state.answered)return;state.answered=true;
+  const q=state.pool[state.i];const correct=choice===q.answer;
+  document.querySelectorAll('.opt').forEach(o=>{o.classList.add('dis');
+    const t=o.querySelector('span:last-child').textContent;
+    if(t===q.answer)o.classList.add('correct');else if(o===btn)o.classList.add('wrong');});
+  finish(correct,q,correct?null:choice);
+}
+
+// ---- multi (выбрать всё)
+function renderMulti(q,body){
+  const ob=document.createElement('div');ob.className='opts';
+  q.options.forEach((opt,idx)=>{const b=document.createElement('button');b.className='opt multi';b.dataset.opt=opt;
+    b.innerHTML=`<span class="let">▢</span><span>${opt}</span>`;
+    b.onclick=()=>{if(state.answered)return;
+      if(state.multiSel.has(opt)){state.multiSel.delete(opt);b.classList.remove('sel');b.querySelector('.let').textContent='▢';}
+      else{state.multiSel.add(opt);b.classList.add('sel');b.querySelector('.let').textContent='▣';}};
+    ob.appendChild(b);});
+  body.appendChild(ob);
+  const sb=document.createElement('button');sb.className='next';sb.style.marginTop='14px';sb.textContent='Проверить';
+  sb.onclick=()=>checkMulti(q);body.appendChild(sb);
+}
+function checkMulti(q){
+  if(state.answered)return;state.answered=true;
+  const ansSet=new Set(q.answers);
+  const correct = state.multiSel.size===ansSet.size && [...ansSet].every(a=>state.multiSel.has(a));
+  document.querySelectorAll('.opt.multi').forEach(o=>{o.classList.add('dis');
+    const opt=o.dataset.opt;const isAns=ansSet.has(opt);const wasSel=state.multiSel.has(opt);
+    if(isAns){o.classList.add('correct');o.querySelector('.let').textContent='▣';}
+    else if(wasSel){o.classList.add('wrong');o.querySelector('.let').textContent='▣';}});
+  // спрятать кнопку проверить
+  const sb=[...document.querySelectorAll('.next')].find(b=>b.textContent==='Проверить');if(sb)sb.style.display='none';
+  finish(correct,q, correct?null:`отмечено: ${[...state.multiSel].join(', ')||'ничего'}`);
+}
+
+// ---- text (ввод)
+function renderText(q,body){
+  const wrap=document.createElement('div');
+  wrap.innerHTML=`<input class="search" id="tin" placeholder="Впиши ответ и нажми Проверить" autocomplete="off">
+    <button class="next" style="margin-top:10px" id="tcheck">Проверить</button>`;
+  body.appendChild(wrap);
+  const inp=document.getElementById('tin');inp.focus();
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkText(q);});
+  document.getElementById('tcheck').onclick=()=>checkText(q);
+}
+function checkText(q){
+  if(state.answered)return;
+  const val=document.getElementById('tin').value;
+  if(!val.trim()){toast('Впиши ответ');return;}
+  state.answered=true;
+  const ok=q.accept.some(a=>textMatch(val,a));
+  finishText(ok,q,val);
+}
+function finishText(ok,q,val){
+  const after=document.getElementById('after');
+  const inp=document.getElementById('tin');if(inp)inp.disabled=true;
+  const tc=document.getElementById('tcheck');if(tc)tc.style.display='none';
+  SESSION.totalAnswered++;
+  if(ok){state.correct++;state.streak++;SESSION.totalCorrect++;HAPTIC.ok();if(state.streak>SESSION.bestStreak)SESSION.bestStreak=state.streak;
+    if(SESSION.dishMiss[q.dish])SESSION.dishMiss[q.dish]=Math.max(0,SESSION.dishMiss[q.dish]-1);}
+  else{state.streak=0;HAPTIC.err();}
+  saveProgress();
+  showDishFoot(q);
+  after.innerHTML=`
+    <div class="expl ${ok?'good':'poor'}">
+      <div class="h">${ok?'✓ Засчитано':'✗ Не совпало'}</div>
+      <div>Твой ответ: «${val}». ${q.expl}</div>
+      ${q.tip?`<div class="tip">💡 <b>Запомни:</b> ${q.tip}</div>`:''}
+      ${!ok?`<button class="markok" onclick="forceText('${encodeURIComponent(JSON.stringify({dish:q.dish}))}')">Мой ответ по сути верный — засчитать</button>`:''}
+    </div>
+    <button class="next" onclick="nextQ()">${state.i+1>=state.target?'Итог →':'Дальше →'}</button>`;
+  if(!ok)state.wrong.push({q:stripHTML(q.q),right:q.accept.join(' / '),chosen:val,dish:q.dish,tip:q.tip,_textIdx:state.wrong.length});
+  else SESSION_OK();
+  after.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function SESSION_OK(){}
+function forceText(payload){
+  // пользователь настаивает, что ответ верен — переводим в правильные
+  const data=JSON.parse(decodeURIComponent(payload));
+  // убрать последнюю ошибку этого блюда
+  for(let i=state.wrong.length-1;i>=0;i--){if(state.wrong[i].dish===data.dish){state.wrong.splice(i,1);break;}}
+  state.correct++;SESSION.totalCorrect++;state.streak++;if(state.streak>SESSION.bestStreak)SESSION.bestStreak=state.streak;
+  if(SESSION.dishMiss[data.dish])SESSION.dishMiss[data.dish]=Math.max(0,SESSION.dishMiss[data.dish]-1);
+  saveProgress();
+  const ex=document.querySelector('.expl');if(ex){ex.classList.remove('poor');ex.classList.add('good');
+    ex.querySelector('.h').textContent='✓ Засчитано вручную';
+    const mk=ex.querySelector('.markok');if(mk)mk.remove();}
+  toast('Засчитано');
+}
+
+function stripHTML(s){return s.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();}
+function showDishFoot(q){const f=document.getElementById('dishfoot');if(f)f.innerHTML=q.dish?`Блюдо: ${q.dish}`:'Вопрос на различение';}
+
+// общий финиш для single/multi
+function finish(correct,q,chosen){
+  SESSION.totalAnswered++;
+  if(correct){state.correct++;state.streak++;SESSION.totalCorrect++;HAPTIC.ok();
+    if(state.streak>SESSION.bestStreak)SESSION.bestStreak=state.streak;
+    if(state.streak===5)toast('🔥 5 подряд!');if(state.streak===10)toast('🔥🔥 10 подряд!');if(state.streak===25)toast('☀☀ 25 подряд!');
+    if(SESSION.dishMiss[q.dish])SESSION.dishMiss[q.dish]=Math.max(0,SESSION.dishMiss[q.dish]-1);
+  } else {state.streak=0;HAPTIC.err();
+    state.wrong.push({q:stripHTML(q.q),right:q.answer||(q.answers||[]).join(', '),chosen:chosen||'—',dish:q.dish,tip:q.tip});
+    if(q.dish)SESSION.dishMiss[q.dish]=(SESSION.dishMiss[q.dish]||0)+1;}
+  saveProgress();
+  showDishFoot(q);
+  document.getElementById('after').innerHTML=`
+    <div class="expl ${correct?'good':'poor'}">
+      <div class="h">${correct?'✓ Верно':'✗ Неверно'}</div>
+      <div>${q.expl}</div>
+      ${q.tip?`<div class="tip">💡 <b>Запомни:</b> ${q.tip}</div>`:''}
+    </div>
+    <button class="next" onclick="nextQ()">${state.i+1>=state.target?'Итог →':'Дальше →'}</button>`;
+  document.getElementById('after').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function nextQ(){state.i++;question();}
+
+// ============ РЕЗУЛЬТАТ ============
+function results(){
+  const total=state.correct+state.wrong.length;const pct=total?Math.round(state.correct/total*100):0;
+  let v,vs,em;
+  if(pct>=90){v="Готов к аттестации";vs="Проводник из тебя выйдет отличный.";em="🏆";}
+  else if(pct>=75){v="Почти готов";vs="Добей слабые блюда.";em="🔥";}
+  else if(pct>=50){v="База есть";vs="Нужно ещё прогоны.";em="📚";}
+  else{v="Рано на смену";vs="Загляни в «Изучение меню».";em="🌵";}
+  const r=66,c=2*Math.PI*r,off=c*(1-pct/100);
+  const byDish={};state.wrong.forEach(w=>{if(w.dish)byDish[w.dish]=(byDish[w.dish]||0)+1;});
+  const weak=Object.entries(byDish).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  app.innerHTML=`
+  <div class="topbar"><button class="back" onclick="home()">← Главная</button><div></div></div>
+  <header style="padding:14px 0 4px"><div class="crest" style="font-size:18px;letter-spacing:10px">☀☀</div><div class="kicker">Результат прогона</div></header>
+  <div class="panel res">
+    <div class="ring"><svg width="150" height="150">
+      <circle cx="75" cy="75" r="${r}" fill="none" stroke="#0006" stroke-width="11"/>
+      <circle cx="75" cy="75" r="${r}" fill="none" stroke="url(#g)" stroke-width="11" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}"/>
+      <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bd5524"/><stop offset="1" stop-color="#eab15a"/></linearGradient></defs>
+    </svg><div class="pct">${pct}%</div></div>
+    <div class="verdict">${em} ${v}</div>
+    <div class="vsub">${state.correct} из ${total} верно · лучшая серия ${SESSION.bestStreak}</div>
+    ${weak.length?`<div class="weakbox"><h3>Слабые блюда</h3>
+      ${weak.map(([d,n])=>`<div class="weak"><b>${d}</b> — ${n} ошиб. (попадут в «Работу над ошибками»)</div>`).join('')}</div>`:''}
+    ${state.wrong.length?`<div class="weakbox"><h3>Разбор ошибок</h3>
+      ${state.wrong.slice(0,25).map(w=>`<div class="weak" style="border-left-color:var(--glow)">
+        <div class="qq">${w.q}</div>
+        <div class="yy">Ты: <span class="me">${w.chosen}</span> · Верно: <span class="ri">${w.right}</span></div>
+        ${w.tip?`<div class="tp">💡 ${w.tip}</div>`:''}</div>`).join('')}
+      ${state.wrong.length>25?`<div class="vsub">…и ещё ${state.wrong.length-25}</div>`:''}</div>`
+      :`<div class="weakbox"><div class="weak" style="border-left-color:var(--ok)">Ни одной ошибки. Чисто! ☀☀</div></div>`}
+    <div class="row2" style="margin-top:18px">
+      <button class="btn" onclick="quickStart(state.cats,state.target)">🔁 Ещё раз</button>
+      <button class="btn ghost" onclick="home()">Главная</button></div>
+  </div>
+  <div class="footer">☀☀ Удачи на аттестации</div>`;
+  tgBack(true,home);window.scrollTo({top:0});
+}
+
+// ============ ИЗУЧЕНИЕ МЕНЮ ============
+function studyScreen(filter){
+  filter=(filter||'').toLowerCase().trim();
+  app.innerHTML=`
+  <div class="topbar"><button class="back" onclick="home()">← Назад</button><div></div></div>
+  <header style="padding:6px 0 8px"><div class="kicker">Изучение меню</div><h1 style="font-size:34px;text-transform:none;letter-spacing:.01em;text-indent:0">Все блюда</h1></header>
+  <div class="panel">
+    <input class="search" id="srch" placeholder="🔍 Поиск: блюдо, ингредиент или аллерген…" value="${filter}" oninput="studyDebounce(this.value)">
+    <div id="dishes"></div>
+  </div>
+  <div class="footer">☀☀ ${ALLD.length} блюд · нажми, чтобы раскрыть</div>`;
+  renderDishes(filter);
+  const s=document.getElementById('srch');s.focus();s.setSelectionRange(s.value.length,s.value.length);
+  tgBack(true,home);window.scrollTo({top:0});
+}
+let studyT;
+function studyDebounce(v){clearTimeout(studyT);studyT=setTimeout(()=>renderDishes(v.toLowerCase().trim()),120);}
+function renderDishes(filter){
+  const box=document.getElementById('dishes');if(!box)return;
+  let html='';let any=false;
+  for(const k of CATKEYS){
+    const matched=MENU[k].dishes.filter(d=>{
+      if(!filter)return true;
+      if(d.name.toLowerCase().includes(filter))return true;
+      if((d.comp||[]).some(c=>c.toLowerCase().includes(filter)))return true;
+      const al=dishAllergens({...d,_cat:k});return al.some(a=>a.includes(filter));
+    });
+    if(!matched.length)continue;any=true;
+    html+=`<div class="catdiv">${CATMETA[k][0]} ${MENU[k].label}</div>`;
+    matched.forEach(d=>{
+      const dd={...d,_cat:k};
+      const facts=(d.facts||[]).map(f=>`<div class="fact"><b>${f[0]}:</b> <span>${f[1]}</span></div>`).join('');
+      const al=dishAllergens(dd);
+      const alTags=al.length?al.map(a=>`<li class="alg">${ALLERGENS.find(x=>x.key===a).label}</li>`).join(''):'<li>нет из списка</li>';
+      const rules=[];if(d.marinade)rules.push(`Маринад: ${d.marinade}`);if(d.sauce)rules.push(`Соус: ${d.sauce}`);rules.push(`Время: ${d.time} мин · ${d.gram}`);
+      const tw=d.takeaway===false?`<div class="rule nota">⚠ НЕ готовим на вынос</div>`:`<div class="rule">✓ Готовим на вынос</div>`;
+      html+=`<details class="dish">
+        <summary><span class="dn">${d.name}</span><span class="dg">${d.gram}</span><span class="ar">›</span></summary>
+        <div class="body">
+          <div class="d">${d.desc}</div>
+          <div class="lbl">Состав</div><ul>${(d.comp||[]).map(c=>`<li>${c}</li>`).join('')}</ul>
+          <div class="lbl">Аллергены</div><ul>${alTags}</ul>
+          ${facts?`<div class="lbl">Детали и истории</div>${facts}`:''}
+          <div class="lbl">Подача</div>${rules.map(r=>`<div class="fact"><span>${r}</span></div>`).join('')}${tw}
+        </div></details>`;
+    });
+  }
+  box.innerHTML=any?html:`<p style="color:var(--paper-dim);padding:14px;text-align:center">Ничего не найдено по «${filter}»</p>`;
+}
+
+loadProgress(()=>home());
+</script>
+</body>
+</html>
