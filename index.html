@@ -11,6 +11,9 @@
     --night:#0e0b07; --night2:#171209; --concrete:#241d14;
     --sandstone:#c9a96a; --sand-lt:#e6cd92; --sand-dim:#8a7048;
     --ember:#bd5524; --ember-lt:#e08a4a; --glow:#eab15a;
+    /* Telegram safe-area + content-safe-area insets (обновляются из JS) */
+    --tg-safe-top:0px; --tg-safe-bottom:0px; --tg-safe-left:0px; --tg-safe-right:0px;
+    --tg-content-top:0px; --tg-content-bottom:0px;
     --paper:#ece0c8; --paper-dim:#b8a888;
     --ok:#7fa86a; --ok-bg:#26301f; --bad:#c2533a; --bad-bg:#33201a;
     --line:#3a3024; --line-lt:#4a3e2e;
@@ -23,7 +26,12 @@
       radial-gradient(ellipse 70% 38% at 50% 0%, #2a2013 0%, transparent 62%),
       radial-gradient(circle at 50% 8%, rgba(234,177,90,.10), transparent 40%),
       linear-gradient(180deg,#0e0b07 0%,#0a0805 100%);
-    background-attachment:fixed;min-height:100vh;padding:0 0 70px;letter-spacing:.01em;
+    background-attachment:fixed;min-height:100vh;letter-spacing:.01em;
+    padding:
+      calc(var(--tg-safe-top) + var(--tg-content-top))
+      var(--tg-safe-right)
+      calc(70px + var(--tg-safe-bottom) + var(--tg-content-bottom))
+      var(--tg-safe-left);
   }
   body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
     background-image:radial-gradient(circle at 50% 0%, rgba(240,179,94,.06), transparent 45%);}
@@ -197,7 +205,7 @@
   .weak .tp{font-size:12px;color:var(--paper-dim);margin-top:5px}
   .footer{text-align:center;font-size:11px;color:var(--sand-dim);margin-top:34px;letter-spacing:.05em;line-height:1.7}
   .byline{color:var(--sandstone);font-family:'Cormorant Garamond';font-size:13px;letter-spacing:.08em;opacity:.85}
-  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(80px);z-index:50;
+  .toast{position:fixed;left:50%;bottom:calc(26px + var(--tg-safe-bottom) + var(--tg-content-bottom));transform:translateX(-50%) translateY(80px);z-index:50;
     background:var(--concrete);border:1px solid var(--sand-dim);color:var(--sand-lt);padding:11px 20px;border-radius:30px;
     font-family:'Cormorant Garamond';font-size:17px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;transition:.3s}
   .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
@@ -208,7 +216,8 @@
   .modal.show{display:flex;animation:fade .2s ease}
   @keyframes fade{from{opacity:0}to{opacity:1}}
   .sheet{background:linear-gradient(165deg,#241d14,#161009);border:1px solid var(--line-lt);
-    border-radius:30px 30px 0 0;max-width:700px;width:100%;max-height:86vh;overflow-y:auto;padding:8px 18px 30px;
+    border-radius:30px 30px 0 0;max-width:700px;width:100%;max-height:86vh;overflow-y:auto;
+    padding:8px 18px calc(30px + var(--tg-safe-bottom) + var(--tg-content-bottom));
     box-shadow:0 -14px 40px rgba(0,0,0,.6);animation:slideup .26s cubic-bezier(.2,.8,.2,1)}
   @keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
   .sheet .grab{width:42px;height:5px;border-radius:10px;background:var(--line-lt);margin:8px auto 14px}
@@ -237,6 +246,21 @@
 // ====== TELEGRAM MINI APP ИНТЕГРАЦИЯ ======
 const TG = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
 const IN_TG = !!(TG && TG.initData !== undefined && TG.platform && TG.platform !== 'unknown');
+
+// применить инсеты Telegram в CSS-переменные
+function applyInsets(){
+  if(!TG) return;
+  const root=document.documentElement.style;
+  const sa = TG.safeAreaInset || {top:0,bottom:0,left:0,right:0};
+  const ca = TG.contentSafeAreaInset || {top:0,bottom:0,left:0,right:0};
+  root.setProperty('--tg-safe-top', (sa.top||0)+'px');
+  root.setProperty('--tg-safe-bottom', (sa.bottom||0)+'px');
+  root.setProperty('--tg-safe-left', (sa.left||0)+'px');
+  root.setProperty('--tg-safe-right', (sa.right||0)+'px');
+  root.setProperty('--tg-content-top', (ca.top||0)+'px');
+  root.setProperty('--tg-content-bottom', (ca.bottom||0)+'px');
+}
+
 if (TG) {
   try {
     TG.ready();
@@ -245,6 +269,21 @@ if (TG) {
     // фирменная тёмная тема Tatooine (не подстраиваемся под клиента)
     if (TG.setHeaderColor) TG.setHeaderColor('#0e0b07');
     if (TG.setBackgroundColor) TG.setBackgroundColor('#0e0b07');
+    if (TG.setBottomBarColor) TG.setBottomBarColor('#0e0b07');
+    // полноэкранный режим (Bot API 8.0+); на старых клиентах метода нет — тихо пропускаем
+    if (typeof TG.requestFullscreen === 'function') { try{ TG.requestFullscreen(); }catch(e){} }
+    // первичное применение инсетов + подписка на изменения
+    applyInsets();
+    if (TG.onEvent){
+      TG.onEvent('safeAreaChanged', applyInsets);
+      TG.onEvent('contentSafeAreaChanged', applyInsets);
+      TG.onEvent('fullscreenChanged', applyInsets);
+      TG.onEvent('viewportChanged', applyInsets);
+      TG.onEvent('fullscreenFailed', ()=>{ /* остаёмся в expand-режиме, инсеты всё равно применены */ applyInsets(); });
+    }
+    // повторно применить после первого кадра (часть клиентов отдаёт инсеты с задержкой)
+    setTimeout(applyInsets, 60);
+    setTimeout(applyInsets, 300);
   } catch(e){}
 }
 // haptic-обёртка
