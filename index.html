@@ -133,6 +133,10 @@
   .opt.wrong .let{background:var(--bad);color:#fff;border-color:var(--bad)}
   .opt.multi.sel{border-color:var(--sandstone);background:rgba(201,169,106,.14)}
   .opt.multi.sel .let{background:var(--sandstone);color:var(--night);border-color:var(--sandstone)}
+  .opt.multi.correct,.opt.multi.correct.sel{border-color:var(--ok);background:var(--ok-bg)}
+  .opt.multi.correct .let,.opt.multi.correct.sel .let{background:var(--ok);color:#10140c;border-color:var(--ok)}
+  .opt.multi.wrong,.opt.multi.wrong.sel{border-color:var(--bad);background:var(--bad-bg)}
+  .opt.multi.wrong .let,.opt.multi.wrong.sel .let{background:var(--bad);color:#fff;border-color:var(--bad)}
   .markok{display:block;width:100%;margin-top:11px;border:1px dashed var(--sand-dim);background:rgba(201,169,106,.08);
     color:var(--sand-lt);border-radius:11px;padding:11px;cursor:pointer;font-family:'Jost';font-size:13.5px;transition:.15s}
   .markok:hover{background:rgba(201,169,106,.18);border-color:var(--sandstone)}
@@ -502,7 +506,7 @@ const MENU = {
     weight: 1,
     dishes: [
       {name:"Зелёный А110%", gram:"350г", time:20, desc:"Витаминный микс трав с яблоком, солёной сливой, изюмом и ореховой заправкой. С мини-шашлыком из овощей.",
-       comp:["микс салата","ореховый соус","зелёное яблоко","овощной шашлык (цукини, брокколи, абельмош/бамия)","белый изюм","солёная слива","свежие огурцы","кунжут кимчи"],
+       comp:["микс салата","ореховый соус (кешью, оливковое масло, соевый соус, мицукан, мирин, белый кунжут, тростниковый сахар)","зелёное яблоко","овощной шашлык (цукини, брокколи, абельмош/бамия)","белый изюм","солёная слива","свежие огурцы","кунжут кимчи"],
        sauce:"Ореховый соус (на А110%)", takeaway:true,
        facts:[["Сколько витамина А","110% суточной нормы"],["Какое яблоко","зелёное (не жёлтое/чёрное)"],["Что в овощном шашлыке","цукини, брокколи, абельмош/бамия"],["Что НЕЛЬЗЯ изменить","микс зелени и шашлычок"],["Абельмош — это","бамия / гибискус съедобный"]]},
       {name:"Зелёный B12", gram:"230г", time:20, desc:"Телячья вырезка с вешенками, миксом зелени, черри и красным луком.",
@@ -638,7 +642,7 @@ const GLOBAL_POOL=[...new Set(ALLD.flatMap(d=>(d.comp||[]).map(coreIng)))].filte
 const ALLERGENS=[
   {key:"глютен",label:"Глютен (злаки)",re:/глютен|мук[аи]|лаваш|хлеб|сухар|панко|тесто|лепёшк|бородинск|роти|макадам|крамбл|корж|эклер|кракелин|нугатин|пшеничн|вафл/i},
   {key:"молочное",label:"Молочное",re:/молок|сливк|сметан|сыр|кефир|йогурт|маскарпоне|буррат|творог|масло сливочн|креметт|сулугуни|панир|мацони|чечил|шевр|матэ|пармезан/i},
-  {key:"орехи",label:"Орехи",re:/кешью|фисташк|грецк|миндал|кедров|орех|макадамия|каштан|нугатин|бобы тонка/i},
+  {key:"орехи",label:"Орехи",re:/кешью|фисташк|грецк|миндал|кедров|орех(?!ов)|макадамия|каштан|нугатин|бобы тонка/i},
   {key:"рыба/морепродукты",label:"Рыба и морепродукты",re:/креветк|икра|ворчестер|рыб|биск|бииск/i},
   {key:"яйцо",label:"Яйцо",re:/яйц|желт|майонез|меренг|заварн/i},
   {key:"кунжут",label:"Кунжут",re:/кунжут|тахин|кунжутн/i},
@@ -1042,10 +1046,11 @@ function checkMulti(q){
   if(state.answered)return;state.answered=true;
   const ansSet=new Set(q.answers);
   const correct = state.multiSel.size===ansSet.size && [...ansSet].every(a=>state.multiSel.has(a));
-  document.querySelectorAll('.opt.multi').forEach(o=>{o.classList.add('dis');
+  document.querySelectorAll('.opt.multi').forEach(o=>{o.classList.add('dis');o.classList.remove('sel');
     const opt=o.dataset.opt;const isAns=ansSet.has(opt);const wasSel=state.multiSel.has(opt);
     if(isAns){o.classList.add('correct');o.querySelector('.let').textContent='▣';}
-    else if(wasSel){o.classList.add('wrong');o.querySelector('.let').textContent='▣';}});
+    else if(wasSel){o.classList.add('wrong');o.querySelector('.let').textContent='✕';}
+    else {o.querySelector('.let').textContent='▢';}});
   // спрятать кнопку проверить
   const sb=[...document.querySelectorAll('.next')].find(b=>b.textContent==='Проверить');if(sb)sb.style.display='none';
   finish(correct,q, correct?null:`отмечено: ${[...state.multiSel].join(', ')||'ничего'}`);
