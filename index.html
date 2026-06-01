@@ -235,6 +235,169 @@
   .sheet .close{width:100%;margin-top:18px;border:1px solid var(--line-lt);background:rgba(60,48,36,.3);color:var(--sand-lt);
     border-radius:13px;padding:13px;font-family:'Cormorant Garamond';font-size:17px;font-weight:600;cursor:pointer}
   .sheet .close:hover{border-color:var(--sand-dim)}
+  /* ====== ИСКРА — маскот ====== */
+  #sparkWrap{position:fixed;z-index:45;right:14px;
+    bottom:calc(16px + var(--tg-safe-bottom) + var(--tg-content-bottom));
+    width:58px;height:70px;cursor:pointer;-webkit-tap-highlight-color:transparent;
+    filter:drop-shadow(0 4px 10px rgba(0,0,0,.45))}
+  #sparkFig{width:100%;height:100%}
+  #sparkSvg{width:100%;height:100%;overflow:visible;transform-origin:50% 92%}
+  /* дыхание/парение всегда */
+  #sparkSvg{animation:sparkFloat 3.6s ease-in-out infinite}
+  @keyframes sparkFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.015)}}
+  /* мерцание пламени */
+  #sparkBody{animation:sparkFlicker 2.4s ease-in-out infinite;transform-origin:50% 88%}
+  @keyframes sparkFlicker{0%,100%{transform:scaleY(1) scaleX(1)}30%{transform:scaleY(1.04) scaleX(.985)}60%{transform:scaleY(.97) scaleX(1.02)}}
+  #sparkCore{animation:sparkCoreP 1.8s ease-in-out infinite;transform-origin:50% 80%}
+  @keyframes sparkCoreP{0%,100%{opacity:.5}50%{opacity:.72}}
+  #sparkGlow{animation:sparkGlowP 3s ease-in-out infinite}
+  @keyframes sparkGlowP{0%,100%{opacity:.7}50%{opacity:1}}
+
+  /* пузырь реплики — вверх-влево, не перекрывает UI */
+  #sparkBubble{position:absolute;bottom:64px;right:0;max-width:236px;width:max-content;
+    background:linear-gradient(165deg,#2b2218,#1a130b);border:1px solid var(--line-lt);
+    color:var(--sand-lt);font-family:'Cormorant Garamond';font-size:15.5px;line-height:1.3;font-weight:600;
+    padding:11px 30px 11px 13px;border-radius:14px 14px 4px 14px;box-shadow:0 8px 22px rgba(0,0,0,.5);
+    opacity:0;transform:translateY(6px) scale(.96);transform-origin:bottom right;
+    transition:.25s cubic-bezier(.2,.8,.2,1);pointer-events:none;text-align:left}
+  #sparkBubble.show{opacity:1;transform:none;pointer-events:auto}
+  #sparkBubble .sb-text{display:block}
+  #sparkBubble .sb-close{position:absolute;top:5px;right:5px;width:20px;height:20px;border:none;
+    background:rgba(201,169,106,.14);color:var(--sand-dim);border-radius:50%;cursor:pointer;
+    font-family:'Jost',sans-serif;font-size:15px;line-height:18px;padding:0;display:grid;place-items:center;transition:.15s}
+  #sparkBubble .sb-close:hover{background:rgba(201,169,106,.3);color:var(--sand-lt)}
+  @media (max-width:380px){#sparkBubble{max-width:196px;font-size:14.5px}}
+  .qcard{margin-bottom:72px}
+  #sparkBubble::after{content:"";position:absolute;bottom:-7px;right:16px;width:12px;height:12px;
+    background:#1a130b;border-right:1px solid var(--line-lt);border-bottom:1px solid var(--line-lt);transform:rotate(45deg)}
+
+  /* ===== ЭМОЦИИ (усложнённые, живые) ===== */
+  /* радость: пружинистый прыжок со сквошем + блик */
+  #sparkSvg.emo-happy{animation:sparkBoing .7s cubic-bezier(.2,1.4,.4,1)}
+  @keyframes sparkBoing{
+    0%{transform:translateY(0) scale(1,1)}
+    18%{transform:translateY(2px) scale(1.12,.86)}
+    42%{transform:translateY(-20px) scale(.9,1.16)}
+    62%{transform:translateY(0) scale(1.08,.92)}
+    80%{transform:translateY(-6px) scale(.98,1.04)}
+    100%{transform:translateY(0) scale(1,1)}}
+  #sparkSvg.emo-happy #blushL,#sparkSvg.emo-happy #blushR{opacity:.75}
+  #sparkSvg.emo-happy #sparkGlow{animation:glowPop .7s ease}
+  @keyframes glowPop{0%{opacity:.7;transform:scale(1)}40%{opacity:1;transform:scale(1.25)}100%{opacity:.7;transform:scale(1)}}
+
+  /* грусть/сочувствие: оседает с лёгким покачиванием «эх» */
+  #sparkSvg.emo-sad{animation:sparkDroop 1.1s ease}
+  @keyframes sparkDroop{0%{transform:translateY(0) rotate(0)}25%{transform:translateY(4px) rotate(-4deg) scale(.97)}55%{transform:translateY(4px) rotate(4deg) scale(.97)}100%{transform:translateY(2px) rotate(0) scale(.98)}}
+  #sparkSvg.emo-sad #sparkBody{filter:saturate(.78) brightness(.92)}
+
+  /* подмигивание: моргает правым + кивок */
+  #sparkSvg.emo-wink{animation:sparkTilt .6s ease}
+  @keyframes sparkTilt{0%{transform:rotate(0)}40%{transform:rotate(-8deg) translateY(-3px)}100%{transform:rotate(0)}}
+  #sparkSvg.emo-wink #sparkEyesClosed path:last-child{opacity:1}
+
+  /* думает: покачивание + «пульс» сердцевины */
+  #sparkSvg.emo-think{animation:sparkSway 2s ease-in-out infinite}
+  @keyframes sparkSway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+  #sparkSvg.emo-think #sparkCore{animation:sparkCoreP 1s ease-in-out infinite}
+
+  /* любопытство: наклон + лёгкое любопытное покачивание */
+  #sparkSvg.emo-curious{animation:sparkPeek 3s ease-in-out infinite}
+  @keyframes sparkPeek{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(-1deg) translateY(-3px)}}
+
+  /* азарт (серия 5): быстрее парит, ярче, искры летят */
+  #sparkSvg.emo-excited{animation:sparkFloat 1.1s ease-in-out infinite}
+  #sparkSvg.emo-excited #sparkBody{animation:sparkFlicker .7s ease-in-out infinite}
+  #sparkSvg.emo-excited #sparkCore{animation:sparkCoreP .7s ease-in-out infinite}
+  #sparkSvg.emo-excited #sparkEmbers{opacity:1}
+  #sparkSvg.emo-excited .ember{animation:emberFly 1.1s linear infinite}
+
+  /* ликование (серия 10/25, триумф): радостный «танец» + вращение + фейерверк искр */
+  #sparkSvg.emo-cheer{animation:sparkParty .9s ease infinite}
+  @keyframes sparkParty{
+    0%{transform:translateY(0) rotate(0) scale(1)}
+    20%{transform:translateY(-16px) rotate(-10deg) scale(1.05)}
+    40%{transform:translateY(0) rotate(0) scale(.97)}
+    60%{transform:translateY(-16px) rotate(10deg) scale(1.05)}
+    80%{transform:translateY(0) rotate(0) scale(.98)}
+    100%{transform:translateY(0) rotate(0) scale(1)}}
+  #sparkSvg.emo-cheer #sparkEmbers{opacity:1}
+  #sparkSvg.emo-cheer .ember{animation:emberBurst .8s ease-out infinite}
+  #sparkSvg.emo-cheer #sparkGlow{animation:glowPulse .8s ease-in-out infinite}
+  @keyframes glowPulse{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+  #sparkSvg.emo-cheer #blushL,#sparkSvg.emo-cheer #blushR{opacity:.85}
+
+  /* гордость: «горделивый» подъём с сиянием */
+  #sparkSvg.emo-proud{animation:sparkProud 2.4s ease-in-out infinite}
+  @keyframes sparkProud{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-5px) scale(1.04)}}
+  #sparkSvg.emo-proud #sparkBody{filter:brightness(1.12)}
+  #sparkSvg.emo-proud #sparkGlow{animation:glowPulse 2.4s ease-in-out infinite}
+  #sparkSvg.emo-proud #blushL,#sparkSvg.emo-proud #blushR{opacity:.6}
+
+  /* поддержка: тёплый «обнимающий» кивок */
+  #sparkSvg.emo-support{animation:sparkHug 2.2s ease-in-out infinite}
+  @keyframes sparkHug{0%,100%{transform:rotate(-3deg) translateY(0)}50%{transform:rotate(5deg) translateY(-3px) scale(1.02)}}
+
+  /* сон: дыхание + «зевок» сердцевины */
+  #sparkSvg.emo-sleep{animation:sparkBreath 4.5s ease-in-out infinite}
+  @keyframes sparkBreath{0%,100%{transform:translateY(2px) scale(.97)}50%{transform:translateY(0) scale(1)}}
+  #sparkSvg.emo-sleep #sparkEyes{opacity:0}
+  #sparkSvg.emo-sleep #sparkEyesClosed{opacity:1}
+  #sparkSvg.emo-sleep #sparkBody{filter:brightness(.88) saturate(.82);animation:sparkFlicker 4s ease-in-out infinite}
+
+  /* траектории искр: разлёт с дрейфом в стороны */
+  @keyframes emberFly{0%{opacity:0;transform:translate(0,0) scale(.6)}25%{opacity:1}100%{opacity:0;transform:translate(var(--ex,0),-26px) scale(1.1)}}
+  @keyframes emberBurst{0%{opacity:0;transform:translate(0,0) scale(.5)}20%{opacity:1}100%{opacity:0;transform:translate(var(--ex,0),-32px) scale(1.2)}}
+  .ember.e1{--ex:-10px;animation-delay:0s}
+  .ember.e2{--ex:8px;animation-delay:.28s}
+  .ember.e3{--ex:-3px;animation-delay:.55s}
+  @keyframes emberRise{0%{opacity:0;transform:translateY(0)}30%{opacity:1}100%{opacity:0;transform:translateY(-24px)}}
+
+  /* щекотка (тап): хихикает и дёргается */
+  #sparkSvg.emo-tickle{animation:sparkTickle .55s ease}
+  @keyframes sparkTickle{
+    0%{transform:rotate(0) scale(1)}
+    15%{transform:rotate(-9deg) scale(1.05,.96) translateX(-2px)}
+    30%{transform:rotate(8deg) scale(.96,1.05) translateX(2px)}
+    45%{transform:rotate(-7deg) scale(1.04,.97) translateX(-2px)}
+    60%{transform:rotate(6deg) scale(.97,1.03) translateX(1px)}
+    75%{transform:rotate(-3deg) scale(1.02,.99)}
+    100%{transform:rotate(0) scale(1)}}
+  #sparkSvg.emo-tickle #blushL,#sparkSvg.emo-tickle #blushR{opacity:.85}
+  #sparkSvg.emo-tickle #sparkEmbers{opacity:1}
+  #sparkSvg.emo-tickle .ember{animation:emberFly .6s linear}
+  #sparkSvg.emo-tickle #eyeL,#sparkSvg.emo-tickle #eyeR{transform:scaleY(.6);transform-origin:center}
+
+  /* разгорается (блейз, серии 10/25): большое ревущее пламя, фейерверк */
+  #sparkSvg.emo-blaze{animation:sparkBlaze .5s ease-in-out infinite}
+  @keyframes sparkBlaze{0%,100%{transform:translateY(0) scale(1.04,1.08)}50%{transform:translateY(-7px) scale(1.08,1.14)}}
+  #sparkSvg.emo-blaze #sparkBody{animation:sparkFlicker .35s ease-in-out infinite;filter:brightness(1.18) saturate(1.15)}
+  #sparkSvg.emo-blaze #sparkCore{animation:sparkCoreP .35s ease-in-out infinite;opacity:.85}
+  #sparkSvg.emo-blaze #sparkGlow{animation:glowPulse .5s ease-in-out infinite}
+  #sparkSvg.emo-blaze #sparkEmbers{opacity:1}
+  #sparkSvg.emo-blaze .ember{animation:emberBurst .55s ease-out infinite}
+  #sparkSvg.emo-blaze #blushL,#sparkSvg.emo-blaze #blushR{opacity:.7}
+
+  /* замерзает: холодный синий оттенок, иней, сжимается */
+  #sparkSvg.emo-freeze{animation:sparkFreeze 1.2s ease forwards}
+  @keyframes sparkFreeze{0%{filter:none;transform:scale(1)}100%{filter:hue-rotate(165deg) saturate(.65) brightness(.95);transform:scale(.94)}}
+  #sparkSvg.emo-freeze #sparkBody{filter:hue-rotate(165deg) saturate(.6) brightness(1.05)}
+  #sparkSvg.emo-freeze #sparkGlow{opacity:.4}
+
+  /* дрожит от холода: мелкая тряска + синева */
+  #sparkSvg.emo-shiver{animation:sparkShiver .12s linear infinite}
+  @keyframes sparkShiver{0%{transform:translate(0,0)}25%{transform:translate(-1.5px,.5px)}50%{transform:translate(1.5px,-.5px)}75%{transform:translate(-1px,1px)}100%{transform:translate(1px,0)}}
+  #sparkSvg.emo-shiver #sparkBody{filter:hue-rotate(150deg) saturate(.7)}
+
+  /* кружится голова (можно вызвать на сложном): вращение */
+  #sparkSvg.emo-dizzy{animation:sparkDizzy 1.2s ease-in-out}
+  @keyframes sparkDizzy{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+  #sparkSvg.emo-dizzy #eyeL,#sparkSvg.emo-dizzy #eyeR{animation:eyeSpin 1.2s linear;transform-origin:center}
+  @keyframes eyeSpin{0%{transform:rotate(0)}100%{transform:rotate(-360deg)}}
+
+  @media (prefers-reduced-motion: reduce){
+    #sparkSvg,#sparkBody,#sparkCore,#sparkGlow,#sparkSvg .ember{animation:none!important}
+  }
+
 </style>
 </head>
 <body>
@@ -1018,6 +1181,7 @@ function home(){
   </div>
   <div class="footer">«Здесь все равны, и каждый чувствует себя своим»<br><span class="byline">Разработал Решад Жук · ☀☀</span></div>`;
   tgBack(false);
+  document.body.dataset.sparkCtx='home'; sparkReact('home',{silent:true});
   window.scrollTo({top:0});
 }
 
@@ -1036,7 +1200,7 @@ function catScreen(){
   <div class="panel"><h2>Длина прогона</h2><div class="lenrow" id="lens"></div></div>
   <button class="btn" onclick="startSelected()">Начать тест →</button>
   <div class="footer">Каждый ответ — с разбором и подсказкой</div>`;
-  renderCats();renderLens();tgBack(true,home);window.scrollTo({top:0});
+  renderCats();renderLens();tgBack(true,home);document.body.dataset.sparkCtx='home';sparkReact('home',{silent:true});window.scrollTo({top:0});
 }
 function renderCats(){document.getElementById('cats').innerHTML=CATKEYS.map(k=>{
   const [ic,pr]=CATMETA[k];const on=selCats.includes(k)?'on':'';
@@ -1047,6 +1211,7 @@ function toggleCat(k){selCats=selCats.includes(k)?selCats.filter(x=>x!==k):[...s
 function startSelected(){if(!selCats.length){toast('Выбери раздел');return;}quickStart(selCats,LEN);}
 
 function quickStart(cats,len){const pool=buildPool(cats,len);
+  document.body.dataset.sparkCtx='startQuiz'; sparkReact('startQuiz');
   state={mode:'quiz',cats,pool,i:0,correct:0,wrong:[],answered:false,target:pool.length,streak:0};question();}
 function mistakesStart(){
   const missed=Object.keys(SESSION.dishMiss).filter(k=>SESSION.dishMiss[k]>0);
@@ -1081,6 +1246,8 @@ function question(){
   if(q.type==='text'){renderText(q,body);}
   else if(q.type==='multi'){renderMulti(q,body);}
   else {renderSingle(q,body);}
+  document.body.dataset.sparkCtx='thinking';
+  sparkReact('thinking',{silent: Math.random()>0.18}); // изредка подаёт голос
   window.scrollTo({top:0});
 }
 
@@ -1161,6 +1328,7 @@ function finishText(ok,q,val,missing){
   if(ok){state.correct++;state.streak++;SESSION.totalCorrect++;HAPTIC.ok();if(state.streak>SESSION.bestStreak)SESSION.bestStreak=state.streak;
     if(SESSION.dishMiss[q.dish])SESSION.dishMiss[q.dish]=Math.max(0,SESSION.dishMiss[q.dish]-1);}
   else{state.streak=0;HAPTIC.err();}
+  sparkOutcome(ok,q);
   saveProgress();
   showDishFoot(q);
   const missLine=(!ok&&missing&&missing.length)?`<div class="tip" style="color:var(--bad)">Не указано: ${missing.join(', ')}.</div>`:'';
@@ -1205,6 +1373,7 @@ function finish(correct,q,chosen){
   } else {state.streak=0;HAPTIC.err();
     state.wrong.push({q:stripHTML(q.q),right:q.answer||(q.answers||[]).join(', '),chosen:chosen||'—',dish:q.dish,tip:q.tip});
     if(q.dish)SESSION.dishMiss[q.dish]=(SESSION.dishMiss[q.dish]||0)+1;}
+  sparkOutcome(correct,q);
   saveProgress();
   showDishFoot(q);
   document.getElementById('after').innerHTML=`
@@ -1255,7 +1424,10 @@ function results(){
       <button class="btn ghost" onclick="home()">Главная</button></div>
   </div>
   <div class="footer">☀☀ Удачи на аттестации</div>`;
-  tgBack(true,home);window.scrollTo({top:0});
+  tgBack(true,home);
+  document.body.dataset.sparkCtx = pct>=90?'resultHigh':(pct>=50?'resultMid':'resultLow');
+  sparkReact(document.body.dataset.sparkCtx,{hold:3200});
+  window.scrollTo({top:0});
 }
 
 // ============ ИЗУЧЕНИЕ МЕНЮ ============
@@ -1271,7 +1443,7 @@ function studyScreen(filter){
   <div class="footer">☀☀ ${ALLD.length} блюд · нажми, чтобы раскрыть</div>`;
   renderDishes(filter);
   const s=document.getElementById('srch');s.focus();s.setSelectionRange(s.value.length,s.value.length);
-  tgBack(true,home);window.scrollTo({top:0});
+  tgBack(true,home);document.body.dataset.sparkCtx='study';sparkReact('study',{silent:true});window.scrollTo({top:0});
 }
 let studyT;
 function studyDebounce(v){clearTimeout(studyT);studyT=setTimeout(()=>renderDishes(v.toLowerCase().trim()),120);}
@@ -1335,6 +1507,590 @@ function openDish(name){
 }
 function closeDish(){document.getElementById('modal').classList.remove('show');}
 
+// ====== БАНК МНЕМОНИК ИСКРЫ ======
+// Привязка к блюду/соусу. Каждый ключ — несколько коротких, реально полезных подсказок.
+// Основаны на этимологии, кулинарной логике и частых ошибках.
+const SPARK_HINTS = {
+  // --- СОУСЫ (этимология + логика вкуса) ---
+  "Тузлук":[
+    "«Тузлук» = тюрк. «рассол, солёная вода» (туз = соль). Думай: солёная сметанная база.",
+    "Цвет даёт ПАПРИКА — её забывают чаще всего. Бел. база (кефир+сметана), а паприка красит.",
+    "Связка: Тузлук = молочка + чеснок + паприка. Запах чеснока + красный оттенок = Тузлук."
+  ],
+  "Цахтон":[
+    "«Цахтон» (цывзы-дзæхдон): цывзы = стручки перца, дзæхдон = заправка. Перец + сметана — и всё.",
+    "Осетинский ≠ грузинский: в цахтоне НЕТ орехов. Только листья острого перца и сметана.",
+    "Всего 2 компонента — не дописывай лишнее. Сметана + маринованный острый перец."
+  ],
+  "Татахи":[
+    "«Татахи» (арм.) = «макать». Соус, в который МАКАЮТ → жидкий, томатный, к мясу мангала.",
+    "Запомни как «томатная четвёрка»: паста + чеснок + зелень + специи, и чили для остринки.",
+    "Если блюдо с мангала и спрашивают соус — почти всегда Татахи (базовый соус углей)."
+  ],
+  "Чимичурри":[
+    "Аргентинский, к ВЯЛЕНОМУ мясу. Зелёный, травяной: кинза + петрушка + чили + лук + лимон + масло.",
+    "Кислинку даёт ЛИМОН, не уксус. В авторских соусах кантины кислота почти всегда лимон/лайм.",
+    "Не путай с зелёным маслом: у чимичурри есть чили и лук, у масла — только петрушка+шпинат."
+  ],
+  "Ореховый соус (на А110%)":[
+    "7 компонентов — «азиатская тройка кислоты»: мицукан + мирин + соевый, плюс кешью, масло, кунжут, сахар.",
+    "Орех тут настоящий — КЕШЬЮ (не «ореховая трава»!). Поэтому это аллерген «орехи».",
+    "Мостик: салат А110% = ореховый соус на кешью. Витамин А + кешью = энергия пустыни."
+  ],
+  "Соус из горного пажитника (на хинкал)":[
+    "Пажитник (ореховая трава) — НЕ орех! Это трава с ореховым ароматом. Аллергена «орехи» нет.",
+    "Отличие от соуса к язычкам: здесь СОЛЬ, у язычков — КЕФИР. Оба на сметане + ореховая трава.",
+    "К хинкалу. Сметана + ореховая трава + чеснок + соль."
+  ],
+  "Соус ореховый (к Огненным язычкам)":[
+    "Запомни по жидкости: к язычкам — с КЕФИРОМ. К хинкалу (пажитник) — с СОЛЬЮ.",
+    "«Ореховая трава» — пажитник, орехов в нём нет. Это не аллерген орехи."
+  ],
+  "Восточный соус":[
+    "К мясу (мраморная телятина). Ореховый, солёно-сладкий: кунжутное масло + соевый + горчица + яблочный уксус.",
+    "Здесь кислинка от ЯБЛОЧНОГО УКСУСА — редкий случай, обычно у соусов лимон. Восточный — исключение."
+  ],
+  "Трюфельный (к суккулентам)":[
+    "Умами-соус к овощам (Суккуленты, Карпаччо): соевый + имбирь + трюфельное масло + кинза + лайм + сахар.",
+    "Кислинка — ЛАЙМ. Глубина — трюфель + соевый (умами)."
+  ],
+  "Брусничный соус (к утке)":[
+    "Ягодный к УТКЕ. Брусника + мята + чёрный перец + сахар. Кисло-сладкий с пряной ноткой.",
+    "Связка: утка Магре медово-горчичная → к ней кислая брусника для баланса жирности."
+  ],
+
+  // --- СУПЫ ---
+  "Мерджимек Чорбасы":[
+    "«Mercimek» = чечевица, «çorbası» = суп. Дословно «чечевичный суп». Турецкий.",
+    "Красная чечевица — мелкая, НЕ замачивают, быстро разваривается → густота супа.",
+    "Лимон (обожжённый) — традиционная приправа турецкого чечевичного супа. Подаётся рядом.",
+    "Ягель — северный мох, ДЕКОР. Не путай со специей: он для хруста и вида."
+  ],
+  "Борщ «Перезагрузка»":[
+    "Главное «почему»: овощи НЕ жарят — томят в свекольном соку. Ниже калорийность, ярче цвет.",
+    "Готовит только бренд-шеф Бисо Чеченов — «слишком личная история».",
+    "Хлебная шапка тёмная из-за активированного УГЛЯ (для цвета). Палочки = мукемышь (адыг.)."
+  ],
+  "Лывжа / Шорпа":[
+    "Имя выбирает ГОСТЬ: лывжа / шорпа / шурпа — на его усмотрение.",
+    "К ней — Цахтон (острый перец + сметана). Говяжий бульон, чили, травы: реган+мята+кинза."
+  ],
+  "Бедуинский суп":[
+    "Единственный с отваром КОНСКОГО ЩАВЕЛЯ отдельно и ХОЛОДНЫМ. Запивать чаем — сказать гостю.",
+    "Каштаны и нут — НЕ орехи-аллергены. Бульон из ягнёнка, каре ягнёнка.",
+    "Тимьян обжигают ПРИ ПОДАЧЕ — для аромата."
+  ],
+  "Томлёные пустынные щи":[
+    "Водка в ПИПЕТКЕ (пара капель). Мусульманам по умолчанию БЕЗ водки — в комментарий.",
+    "Грибы — БЕЛЫЕ (для глубины вкуса). Говядина томлёная, на волокна. Хлеб — бородинский."
+  ],
+
+  // --- МАНГАЛ (различения) ---
+  "Адана-кебаб":[
+    "Адана = ТЕЛЯТИНА (+чили, болгарский перец). Кебаб из баранины = баранина + курдюк. Не путай!",
+    "Адана острый (🌶) за счёт чили. Если «пикантное люля из телятины» — это Адана.",
+    "Люля при глютене подаём БЕЗ ЛАВАША (не «без лепёшки» — лепёшка у шашлычных с роти)."
+  ],
+  "Кебаб из баранины":[
+    "Баранина + КУРДЮК. Если в фарше курдюк — это бараний кебаб, не Адана (тот телячий).",
+  ],
+  "Вырезка мраморной телятины":[
+    "Лук маринуют с БАЗИЛИКОМ, МЯТОЙ, ПЕТРУШКОЙ (благородная зелень). Укропа тут НЕТ!",
+    "Два соуса: Татахи (томатный) + Восточный. При глютене — БЕЗ ЛЕПЁШКИ (роти).",
+    "Правило укропа: телятина = базилик/мята/петрушка, баранина/курица = укроп."
+  ],
+  "Уч-панжа":[
+    "«Уч панжа» = «три пальца»: размер куска под хват тремя пальцами. На 3 шампурах.",
+    "Вырезка баранины + курдюк, чередуются. При глютене — без лепёшки роти."
+  ],
+  "Утка Магре":[
+    "Граммовка-ИСКЛЮЧЕНИЕ: кратно 200г (200/400). 300г на шампур НЕ влезает!",
+    "Метод «магре» из Гаскони (Франция): сочное мясо, хрустящая кожа. НЕ на вынос — станет как печень.",
+    "Маринад медово-горчичный → к ней кислый брусничный соус. Запомни пару: утка+брусника."
+  ],
+  "Огненные язычки":[
+    "Граммовка-ИСКЛЮЧЕНИЕ: только кратно 4 (4/8/12). Нельзя 5/6/7.",
+    "Два соуса: Тузлук + ореховый (с кефиром!). Маринад — аджика."
+  ],
+  "Жау Бауур":[
+    "«жау» = жир, «бауур» = печень. Печень в жировой сетке. Прожарка medium (кровяной сок — норма).",
+    "Балкарское. Соус — Тузлук. При глютене — без лаваша."
+  ],
+  "Корейка карачаевского ягнёнка":[
+    "Маринад на ГАЗИРОВАННОЙ воде (+лук, соль, специи) — газировка размягчает мясо.",
+    "Карачаевская баранина: горные пастбища, без запаха, низкий холестерин."
+  ],
+  "Мясо бедуинской птицы":[
+    "Курица. Маринад: томатная паста + ДОМАШНИЙ майонез (желтки+оливк. масло) + соль.",
+    "Тот же маринад, что у Крыльев скитальцев — оба куриные."
+  ],
+
+  // --- ЗАКУСКИ / САЛАТЫ ---
+  "Рубленое мясо Фрименов":[
+    "Тартар = СЫРОЕ мясо → съесть за 5 минут, тарелка «Челюсть» холодная. НЕ на вынос.",
+    "Голова каррука после подачи — в холодный цех, НЕ на мойку!",
+    "Вагю австралийский кросс, халяль, через ОАЭ. Сертификат — только менеджер/бренд-шеф."
+  ],
+  "Зелёный B12":[
+    "Соус для вешенок: кислинка — ЛИМОН, не уксус. Каперсы+соевый+чеснок+горчица+лимон+масло.",
+    "Телятина богата B12 → отсюда название. Пармезановый чипс — на сухой сковороде.",
+  ],
+  "Зелёный А110%":[
+    "110% витамина А → имя. Яблоко строго ЗЕЛЁНОЕ (не жёлтое/чёрное).",
+    "Нельзя менять микс зелени и шашлычок (заранее готовятся). Соус — ореховый на кешью.",
+    "Абельмош = бамия (одно и то же) — в овощном шашлыке."
+  ],
+  "Благодать Фрименов":[
+    "Сыр — БУРРАТА (упругая снаружи, текучий крем внутри). Зелёное масло = петрушка+шпинат+масло.",
+  ],
+  "Фаттуш":[
+    "«Фатт» (араб.) = «крошить, ломать». Салат с КРОШЕНЫМ лавашом. Из Ливана (спасали чёрствый хлеб).",
+    "Единственный салат, где в миксе зелени ЕСТЬ кинза.",
+  ],
+  "Песчаные баклажаны":[
+    "Молочка тут НЕТ! Панировка КРАХМАЛЬНАЯ. Соус кисло-сладкий на персиках + кунжутное масло.",
+    "Съесть за 3 минуты — иначе хруст уходит в мармелад.",
+  ],
+  "Хариса":[
+    "Глютен — в ПАНКО сухарях внутри харисы. Печёный перец Рамиро + маскарпоне + вяленые томаты.",
+    "Совет подачи: перемешать масло с бальзамиком для яркости.",
+  ],
+  "Дар Оазиса":[
+    "Перец Рамиро начинён ЦАХТОНОМ + сыр Креметта. Зелёное масло = петрушка+шпинат.",
+  ],
+  "Бутоны Цикара":[
+    "Артишоки на подушке из ХАРИСЫ. Вся часть артишока съедобна, листья хрустящие.",
+  ],
+  "Ферментированные щёки каррука":[
+    "Готовят ТОЛЬКО осенью. Голову вымачивают 14 дней в сыворотке. Деликатес «не для всех».",
+    "Рекомендуем дижонскую горчицу (доп. позиция). Текстура: мясо+коллаген+сало.",
+  ],
+  "Панир на огне":[
+    "Цвет — РУБИНОВЫЙ (от гранатового сока в маринаде). Подаётся комнатной/тёплой. НЕ на вынос.",
+  ],
+  "Сыры долин Банты":[
+    "5 сыров по 40г. Белпер Кнол — ВЕРБЛЮЖИЙ (Belp = город, Knolle = клубень). Шевр = козий.",
+    "Чай на конском щавеле снимает жирность сыра. Банта — травоядное Татуина (голубое молоко).",
+  ],
+  "Вяленое пустынное мясо":[
+    "Лягур: ля=мясо, гур=сушёное. Бастурма = тюрк. «прижатое/прессованное» (клали под седло).",
+    "Соус — чимичурри. Бастурма покрыта пастой чимен: пажитник+паприка+чеснок.",
+  ],
+  "Суккуленты Татуина":[
+    "НЕ нарезаются: дайкон, тыква, кукуруза. Неизменная основа: томаты, огурцы, перец Рамиро.",
+    "Соус трюфельный. На вынос — корзина в плёнке + крафт-пакет.",
+  ],
+
+  // --- ХЫЧЫНЫ / ТЕСТО ---
+  "Хычын балкарский (картофель+сыр)":[
+    "«ХЫЧ» = «крест» → делим на 4. Тесто БЕЗДРОЖЖЕВОЕ (мука+вода+соль+масло).",
+    "Чёрные пятна — брак (не берём). Коричневые — ещё допустимы.",
+  ],
+  "Хычын карачаевский":[
+    "Тесто ДРОЖЖЕВОЕ богатое (молоко+дрожжи+масло+яйцо+сахар). Балкарский — бездрожжевое.",
+    "Открытый мясной пирог. Начинка на выбор: баранина или телятина (телятина пикантнее).",
+  ],
+  "Хачапури на огне":[
+    "Сыр — СУЛУГУНИ. Смазывают желтком перед жаркой. Соус — Тузлук.",
+    "Не путай: сулугуни только тут. В Халюже — вагю+телятина, в Коре спайса — натуральный сыр.",
+  ],
+  "Халюж с вагю":[
+    "Соус БИИСК (креветочный) — отдельно. Сверху чёрная икра. Адыгейский мини-чебурек.",
+  ],
+
+  // --- ДЕСЕРТЫ ---
+  "Тускенский урожай":[
+    "3 ингредиента: кедровые орехи + брусника + мёд. Холодный (−6°C). Есть, смешивая всё. НЕ на вынос.",
+  ],
+  "Хруст пустыни":[
+    "Интерактив: перчатки, сжать ладонями до хруста, есть руками. Штраф за скол тарелки — 888₽.",
+    "Из Кабардино-Балкарии. Крем на БЕЗЛАКТОЗНЫХ сливках.",
+  ],
+  "Медовик «Ржавое время»":[
+    "Мёд — ГРЕЧИШНЫЙ (и в коржах, и в креме): глубокий «земляной» вкус. НЕ на вынос (сорбет тает).",
+    "«Ржавчина» — шоколад на металлическом цилиндре.",
+  ],
+  "Жар от костра":[
+    "Бобы тонка = «усиленная ваниль» (ваниль+миндаль+карамель). Дым — сухой лёд. НЕ на вынос.",
+    "Шу = имитация дров (обугленная оболочка). Вишня = огонь.",
+  ],
+  "Эклер «Пробуждение»":[
+    "Тёмный цвет кракелина — от активированного УГЛЯ. Крем карамельный на пиве Guinness Б/А (не алкоголь).",
+    "Единственный десерт НА вынос (остальные тают/холодные).",
+  ],
+};
+
+// общие подсказки-закономерности (когда нет точечной)
+const SPARK_PATTERNS = [
+  "Правило укропа: телятина = базилик/мята/петрушка, баранина/курица/печень = укроп.",
+  "Кислинка в авторских соусах — почти всегда ЛИМОН/ЛАЙМ, а не уксус (исключение — Восточный соус).",
+  "База мангала одна: лаваш + маринованный лук + зёрна граната + соус Татахи. Учи только мясо и маринад.",
+  "Глютен на мангале: на углях → пергамент; с лепёшкой роти → без лепёшки; люля → без лаваша.",
+  "Граммовки-исключения: Утка — кратно 200, Язычки — по 4. Всё остальное — кратно 100.",
+  "«Ореховая трава» (пажитник) — НЕ орех. А вот кешью, фисташка, каштан, миндаль — настоящие орехи.",
+  "Не на вынос = сырое / тает / рушится: тартар, утка, панир, карпаччо, тускенский, медовик, жар от костра.",
+  "Цвет-подсказки: красный оттенок молочного соуса — паприка (Тузлук); рубиновый панир — гранат.",
+  "Этимология «давить»: бастурма (прессованное под седлом). «Макать»: татахи. «Крест»: хычын (делим на 4).",
+];
+
+// предположения о причине ошибки → как запомнить (по тегу/теме вопроса)
+const SPARK_ERROR_COACH = {
+  allerg:[
+    "Часто путают аллерген с названием: «ореховая трава» звучит как орех, но это пажитник — орехов нет.",
+    "Проверь источник аллергена в составе: молочное ищи в сырах/сливках, не в слове «панировка».",
+    "Алкоголь — только водка и бурбон. Guinness тут Б/А, виноград — это сорт, не вино.",
+  ],
+  comp:[
+    "Если ошибся в составе — назови блюдо вслух и «пройди» по тарелке слева направо, ингредиент за ингредиентом.",
+    "Лишний ингредиент обычно из соседнего блюда той же категории. Спроси себя: «а это точно сюда?»",
+  ],
+  twin:[
+    "Пары-двойняшки учи через ОДНО отличие: Адана(телятина) vs Кебаб(баранина+курдюк).",
+    "Когда блюда похожи — цепляйся за уникальную деталь, а не за общее.",
+  ],
+  marinade:[
+    "Маринад путается с составом блюда. Маринад — то, во ЧТО клали мясо до огня (часто газировка/масло/специи).",
+  ],
+};
+
+
+// ====== ИСКРА — маскот (дух огня кантины) ======
+// SVG рисуется один раз, эмоции = классы + смена черт лица/пламени
+const SPARK_SVG = `
+<svg id="sparkSvg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <radialGradient id="flameGrad" cx="50%" cy="62%" r="60%">
+      <stop offset="0%" stop-color="#fff2c4"/>
+      <stop offset="38%" stop-color="#f0b35e"/>
+      <stop offset="72%" stop-color="#e0742f"/>
+      <stop offset="100%" stop-color="#bd4a1e"/>
+    </radialGradient>
+    <radialGradient id="glowGrad" cx="50%" cy="55%" r="55%">
+      <stop offset="0%" stop-color="rgba(240,179,94,.55)"/>
+      <stop offset="100%" stop-color="rgba(240,179,94,0)"/>
+    </radialGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="0.6"/></filter>
+  </defs>
+  <!-- свечение -->
+  <ellipse id="sparkGlow" cx="50" cy="60" rx="46" ry="52" fill="url(#glowGrad)"/>
+  <!-- тлеющие угольки/искры -->
+  <g id="sparkEmbers" opacity="0">
+    <circle class="ember e1" cx="30" cy="40" r="2" fill="#ffd98a"/>
+    <circle class="ember e2" cx="70" cy="46" r="1.6" fill="#ffcf6e"/>
+    <circle class="ember e3" cx="52" cy="26" r="1.8" fill="#fff0c0"/>
+  </g>
+  <!-- тело-пламя -->
+  <path id="sparkBody" fill="url(#flameGrad)" filter="url(#soft)"
+    d="M50 14 C66 30 78 44 78 66 C78 90 64 104 50 104 C36 104 22 90 22 66 C22 44 34 30 50 14 Z"/>
+  <!-- внутренний светлый язык -->
+  <path id="sparkCore" fill="#ffe6a8" opacity=".55"
+    d="M50 44 C58 54 62 60 62 72 C62 84 56 92 50 92 C44 92 38 84 38 72 C38 60 42 54 50 44 Z"/>
+  <!-- лицо -->
+  <g id="sparkFace">
+    <!-- глаза -->
+    <g id="sparkEyes" fill="#3a1d08">
+      <circle id="eyeL" cx="42" cy="66" r="4.4"/>
+      <circle id="eyeR" cx="58" cy="66" r="4.4"/>
+      <circle cx="43.4" cy="64.6" r="1.4" fill="#fff" opacity=".9"/>
+      <circle cx="59.4" cy="64.6" r="1.4" fill="#fff" opacity=".9"/>
+    </g>
+    <!-- закрытые глаза (сон/моргание) -->
+    <g id="sparkEyesClosed" stroke="#3a1d08" stroke-width="2.4" stroke-linecap="round" opacity="0">
+      <path d="M37 66 q5 4 10 0"/><path d="M53 66 q5 4 10 0"/>
+    </g>
+    <!-- рот -->
+    <path id="sparkMouth" fill="none" stroke="#3a1d08" stroke-width="2.6" stroke-linecap="round"
+      d="M44 78 q6 5 12 0"/>
+    <!-- румянец -->
+    <ellipse id="blushL" cx="36" cy="74" rx="3.4" ry="2.1" fill="#ff8a4a" opacity="0"/>
+    <ellipse id="blushR" cx="64" cy="74" rx="3.4" ry="2.1" fill="#ff8a4a" opacity="0"/>
+  </g>
+</svg>`;
+
+// реплики по ситуациям — несколько вариантов, выбираем случайно
+const SPARK_LINES = {
+  home: [
+    "Привет, путник. Я Искра — посижу с тобой у огня.",
+    "Каждое блюдо — как искра. Соберём их вместе.",
+    "Готов? Пламя знаний не гаснет у того, кто пробует.",
+    "Снова ты! Угольки уже тёплые — начнём?",
+    "У огня кантины всегда найдётся место для тебя.",
+    "Пустыня большая, но меню мы одолеем по кусочку.",
+    "Разожжём память? Я подкину пару хитростей."
+  ],
+  startQuiz: [
+    "Вдохни. Ты знаешь больше, чем думаешь.",
+    "Идём шаг за шагом — я рядом.",
+    "Покажем, на что ты способен.",
+    "Не на скорость, а на точность. Спокойно.",
+    "Каждый верный ответ — полено в твой костёр.",
+    "Ошибёшься — не страшно, я подскажу как запомнить.",
+    "Поехали. Пусть пламя разгорается."
+  ],
+  correct: [
+    "Вот это огонь! Так держать.",
+    "Точно в цель. Ты разгораешься.",
+    "Да! Чувствуешь, как становится теплее?",
+    "Именно так. Запомнили навсегда.",
+    "Чисто! Уголёк лёг ровно.",
+    "Красиво. Ещё одно блюдо — твоё.",
+    "В точку. Память крепнет.",
+    "Так и есть! Ты на верном пути.",
+    "Огонь признаёт своего. Молодец.",
+    "Уверенно. Мне нравится твой настрой."
+  ],
+  wrong: [
+    "Ничего. Даже большой костёр начинался с искры.",
+    "Спокойно — ошибка это часть пути. Идём дальше.",
+    "Не страшно. Теперь ты это запомнишь крепче.",
+    "Бывает. Я всё ещё в тебя верю.",
+    "Промах — это просто следующий шаг к точному удару.",
+    "Ничего страшного. Дай-ка подскажу хитрость…",
+    "Тут многие спотыкаются. Сейчас разберём.",
+    "Не вешай нос. Один уголёк — ещё не весь костёр.",
+    "Запомним через ошибку — так даже надёжнее.",
+    "Я рядом. Поправимся и пойдём дальше."
+  ],
+  streak5: [
+    "Пять подряд! Пламя растёт.",
+    "Ты на волне — не останавливайся!",
+    "Пятёрка влёт! Чувствуешь жар?",
+    "Разгорелось! Так держать темп."
+  ],
+  streak10: [
+    "Десять! Ты горишь по-настоящему.",
+    "Вот это жар! Кантина тобой гордится.",
+    "Десять подряд — рука у тебя твёрдая!",
+    "Огонь до небес. Невероятно идёшь."
+  ],
+  streak25: [
+    "Двадцать пять подряд — ты настоящий мастер огня!",
+    "Невероятно. Ты сам теперь как маяк в пустыне.",
+    "Двадцать пять! Проводники слагают о тебе легенды.",
+    "Это уже не искра — это целый костёр знаний!"
+  ],
+  thinking: [
+    "Не спеши. Подумай — ответ ближе, чем кажется.",
+    "Тихо… прислушайся к тому, что уже знаешь.",
+    "Представь тарелку перед собой — что на ней?",
+    "Если сомневаешься, вспомни закономерность.",
+    "Доверься памяти — ты это уже встречал."
+  ],
+  resultHigh: [
+    "Ты готов. Пустыня покорится тебе.",
+    "Блестяще! Аттестация — формальность для тебя.",
+    "Огонь мастера. Иди и удиви их.",
+    "Вот это уровень! Я горжусь, что грел тебе путь."
+  ],
+  resultMid: [
+    "Уже близко. Ещё пара заходов — и ты там.",
+    "Хорошая основа. Добавим жару — и готово.",
+    "Крепко идёшь. Подтянем слабые блюда — и порядок.",
+    "Половина пути позади. Дальше будет легче."
+  ],
+  resultLow: [
+    "Не сдавайся. Каждый проводник когда-то начинал с нуля.",
+    "Огонь не гаснет от одной попытки. Пробуем ещё.",
+    "Это только начало костра. Подкинем дров — разгорится.",
+    "Загляни в «Изучение меню», и вернёмся сильнее."
+  ],
+  study: [
+    "Изучай спокойно — я подсвечу путь.",
+    "Здесь все ответы. Впитывай, как песок воду.",
+    "Читай не спеша — память любит тишину.",
+    "Нашёл что-то новое? Загляни в детали блюда."
+  ],
+  idle: [
+    "…тлею потихоньку. Позови, когда будешь готов.",
+    "Я здесь, рядом. Грею угольки.",
+    "Отдохни, я посторожу огонь.",
+    "Когда захочешь — продолжим. Я не гасну."
+  ],
+  tickle: [
+    "Ха-ха, щекотно! Перестань… ну ладно, ещё разок!",
+    "Хи-хи! Осторожно, я искрю!",
+    "Ой-ой, не надо — я же рассыплюсь искрами! Хи-хи!",
+    "Ха! Щекотки боюсь больше, чем воды.",
+    "Хихи! От смеха я аж ярче горю!",
+    "Эй-эй! Так и до фейерверка недалеко, ха-ха!",
+    "Щекотно-щекотно! Ладно, ладно, занимаемся дальше?",
+    "Пф-ха! Искры из глаз… в хорошем смысле!"
+  ]
+};
+
+// ====== ЭМОЦИИ: класс на контейнере управляет позой/анимацией ======
+const SPARK_EMO = {
+  calm:'calm', happy:'happy', sad:'sad', wink:'wink', excited:'excited',
+  cheer:'cheer', think:'think', proud:'proud', support:'support', curious:'curious', sleep:'sleep',
+  tickle:'tickle', blaze:'blaze', freeze:'freeze', shiver:'shiver', dizzy:'dizzy'
+};
+// какая эмоция для какой ситуации
+const SPARK_FOR = {
+  home:'calm', startQuiz:'wink', correct:'happy', wrong:'sad',
+  streak5:'excited', streak10:'cheer', streak25:'cheer', thinking:'think',
+  resultHigh:'proud', resultMid:'support', resultLow:'support',
+  study:'curious', idle:'sleep'
+};
+
+let sparkIdleTimer=null, sparkBubbleTimer=null, sparkRevert=null;
+function spark(){return document.getElementById('sparkWrap');}
+// формы рта по эмоциям (надёжнее, чем CSS d:)
+const SPARK_MOUTH={
+  calm:"M44 78 q6 5 12 0", happy:"M42 77 q8 8 16 0", sad:"M44 82 q6 -5 12 0",
+  wink:"M43 77 q7 7 14 0", think:"M45 79 q5 3 10 0", curious:"M45 78 q5 4 10 0",
+  excited:"M42 77 q8 8 16 0", cheer:"M41 76 q9 10 18 0", proud:"M43 78 q7 6 14 0",
+  support:"M44 78 q6 5 12 0", sleep:"M46 79 q4 2 8 0",
+  tickle:"M40 76 q10 12 20 0", blaze:"M41 76 q9 11 18 0", freeze:"M45 80 q5 -3 10 0",
+  shiver:"M44 79 q6 2 12 0", dizzy:"M44 80 q6 4 12 0"
+};
+function sparkSetEmotion(emo){
+  emo=emo||'calm';
+  const el=document.getElementById('sparkSvg'); if(!el)return;
+  Object.values(SPARK_EMO).forEach(c=>el.classList.remove('emo-'+c));
+  el.classList.add('emo-'+emo);
+  // рот через атрибут d
+  const m=document.getElementById('sparkMouth'); if(m&&SPARK_MOUTH[emo])m.setAttribute('d',SPARK_MOUTH[emo]);
+  // глаза: закрытые для сна, прищур для think
+  const eyes=document.getElementById('sparkEyes'), closed=document.getElementById('sparkEyesClosed');
+  if(eyes&&closed){
+    const sleeping=emo==='sleep';
+    eyes.style.opacity=sleeping?'0':'1';
+    closed.style.opacity=sleeping?'1':'0';
+  }
+  // подмигивание: спрятать правый глаз
+  const eyeR=document.getElementById('eyeR'); if(eyeR)eyeR.style.opacity=(emo==='wink')?'0':'1';
+}
+let _lastSpokenLine=null;
+function sparkHideBubble(){
+  const b=document.getElementById('sparkBubble'); if(b)b.classList.remove('show');
+  clearTimeout(sparkBubbleTimer);
+}
+function sparkSay(line){
+  const b=document.getElementById('sparkBubble'); if(!b)return;
+  _lastSpokenLine=line;
+  b.innerHTML=`<span class="sb-text"></span><button class="sb-close" aria-label="закрыть">×</button>`;
+  b.querySelector('.sb-text').textContent=line;
+  const closeBtn=b.querySelector('.sb-close');
+  closeBtn.onclick=(e)=>{ e.stopPropagation(); sparkHideBubble(); };
+  b.classList.add('show');
+  clearTimeout(sparkBubbleTimer);
+  // длительность зависит от длины текста: ~55мс/символ, мин 4.5с, макс 12с
+  const dur=Math.min(12000, Math.max(4500, line.length*55));
+  sparkBubbleTimer=setTimeout(()=>b.classList.remove('show'), dur);
+}
+// выбор фразы без повтора последней из набора
+const _lineMem={};
+function pickLine(key, arr){
+  if(!arr||!arr.length)return null;
+  if(arr.length===1)return arr[0];
+  let i, guard=0;
+  do{ i=Math.floor(Math.random()*arr.length); guard++; }while(arr[i]===_lineMem[key]&&guard<8);
+  _lineMem[key]=arr[i];
+  return arr[i];
+}
+// главный вызов: реакция на ситуацию
+function sparkReact(situation, opts){
+  opts=opts||{};
+  const emo=SPARK_FOR[situation]||'calm';
+  sparkSetEmotion(emo);
+  if(opts.silent!==true){
+    const lines=SPARK_LINES[situation];
+    const ln=pickLine(situation, lines);
+    if(ln) sparkSay(ln);
+  }
+  // временные эмоции возвращаются в спокойствие; фоновые (calm/curious/sleep) — остаются
+  clearTimeout(sparkRevert);
+  const transient=['happy','sad','wink','excited','cheer','proud','support','tickle','blaze','dizzy','shiver'];
+  if(transient.includes(emo)){
+    sparkRevert=setTimeout(()=>sparkSetEmotion(document.body.dataset.sparkRest||'calm'), opts.hold||2600);
+  } else {
+    document.body.dataset.sparkRest=emo; // запомнить фоновую позу экрана
+  }
+  resetIdle();
+}
+// выбор подсказки по блюду / типу ошибки / закономерности
+function sparkPickHint(q, ok){
+  const dishHints = q && q.dish && SPARK_HINTS[q.dish];
+  const tag=q&&q.tag||'';
+  let coachKey=null;
+  if(/allerg/.test(tag))coachKey='allerg';
+  else if(/twin/.test(tag))coachKey='twin';
+  else if(/marinade/.test(tag))coachKey='marinade';
+  else if(/comp|odd|sauce_multi/.test(tag))coachKey='comp';
+  const pool=[];
+  if(!ok){
+    if(coachKey&&SPARK_ERROR_COACH[coachKey])pool.push(...SPARK_ERROR_COACH[coachKey]);
+    if(dishHints)pool.push(...dishHints);
+    if(!pool.length)pool.push(...SPARK_PATTERNS);
+  } else {
+    if(dishHints)pool.push(...dishHints);
+    pool.push(...SPARK_PATTERNS);
+  }
+  return pool.length?pool[Math.floor(Math.random()*pool.length)]:null;
+}
+let _hintT=null;
+// реакция на исход ответа с учётом серии + подсказки
+function sparkOutcome(ok, q){
+  clearTimeout(_hintT);
+  if(ok){
+    const s=state&&state.streak||0;
+    if(s===25){sparkSetEmotion('blaze');sparkSay(pickLine('streak25',SPARK_LINES.streak25));clearTimeout(sparkRevert);sparkRevert=setTimeout(()=>sparkSetEmotion(document.body.dataset.sparkRest||'calm'),3400);return;}
+    if(s===10){sparkSetEmotion('blaze');sparkSay(pickLine('streak10',SPARK_LINES.streak10));clearTimeout(sparkRevert);sparkRevert=setTimeout(()=>sparkSetEmotion(document.body.dataset.sparkRest||'calm'),3200);return;}
+    if(s===5){sparkReact('streak5',{hold:2800});return;}
+    sparkSetEmotion('happy');
+    if(Math.random()<0.3){const h=sparkPickHint(q,true); if(h){sparkSay('💡 '+h);} else sparkSay(pickLine('correct',SPARK_LINES.correct));}
+    else sparkSay(pickLine('correct',SPARK_LINES.correct));
+    clearTimeout(sparkRevert);
+    sparkRevert=setTimeout(()=>sparkSetEmotion(document.body.dataset.sparkRest||'calm'), 3000);
+  } else {
+    sparkSetEmotion('sad');
+    const h=sparkPickHint(q,false);
+    sparkSay(pickLine('wrong',SPARK_LINES.wrong));
+    if(h){_hintT=setTimeout(()=>sparkSay('💡 '+h), 2300);}
+    clearTimeout(sparkRevert);
+    sparkRevert=setTimeout(()=>sparkSetEmotion(document.body.dataset.sparkRest||'calm'), 5400);
+  }
+}
+// бездействие → остывает, дрожит, затем засыпает
+function resetIdle(){
+  clearTimeout(sparkIdleTimer);
+  clearTimeout(sparkIdleTimer2);
+  sparkIdleTimer=setTimeout(()=>{
+    // стадия 1: остывает и поёживается
+    sparkSetEmotion('shiver');
+    sparkSay("Брр… без дела я остываю. Давай ещё вопросик?");
+    sparkIdleTimer2=setTimeout(()=>{ sparkSetEmotion('sleep'); sparkSay(pickLine('idle',SPARK_LINES.idle)); }, 6000);
+  }, 40000);
+}
+let sparkIdleTimer2=null;
+// тап по Искре — щекотка: хихикает и дёргается
+let _tickleBusy=false;
+function sparkTap(){
+  if(_tickleBusy)return;
+  _tickleBusy=true;
+  HAPTIC && HAPTIC.tap && HAPTIC.tap();
+  const el=document.getElementById('sparkSvg');
+  if(el){
+    el.classList.remove('emo-'+ (document.body.dataset.sparkRest||'calm'));
+    sparkSetEmotion('tickle');
+  }
+  sparkSay(pickLine('tickle', SPARK_LINES.tickle));
+  clearTimeout(sparkRevert);
+  sparkRevert=setTimeout(()=>{ sparkSetEmotion(document.body.dataset.sparkRest||'calm'); _tickleBusy=false; }, 1300);
+  resetIdle();
+}
+// смонтировать маскота один раз
+function mountSpark(){
+  if(document.getElementById('sparkWrap'))return;
+  const w=document.createElement('div'); w.id='sparkWrap'; w.onclick=sparkTap;
+  w.innerHTML=`<div id="sparkBubble"></div><div id="sparkFig">${SPARK_SVG}</div>`;
+  document.body.appendChild(w);
+  sparkSetEmotion('calm');
+  resetIdle();
+}
+
+
+mountSpark();
 loadProgress(()=>home());
 </script>
 </body>
