@@ -241,7 +241,7 @@
     width:58px;height:70px;cursor:pointer;-webkit-tap-highlight-color:transparent;
     filter:drop-shadow(0 4px 10px rgba(0,0,0,.45))}
   #sparkFig{width:100%;height:100%}
-  #sparkSvg{width:100%;height:100%;overflow:visible;transform-origin:50% 92%}
+  #sparkSvg{width:100%;height:100%;overflow:visible;transform-origin:50% 95%}
   /* дыхание/парение всегда */
   #sparkSvg{animation:sparkFloat 3.6s ease-in-out infinite}
   @keyframes sparkFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.015)}}
@@ -252,6 +252,19 @@
   @keyframes sparkCoreP{0%,100%{opacity:.5}50%{opacity:.72}}
   #sparkGlow{animation:sparkGlowP 3s ease-in-out infinite}
   @keyframes sparkGlowP{0%,100%{opacity:.7}50%{opacity:1}}
+  /* языки пламени колышутся вразнобой */
+  .tongue{transform-origin:50% 100%}
+  .t1{animation:tongueWave 1.5s ease-in-out infinite}
+  .t2{animation:tongueWave 1.9s ease-in-out infinite .2s}
+  .t3{animation:tongueWave 1.7s ease-in-out infinite .4s}
+  @keyframes tongueWave{0%,100%{transform:scaleY(1) skewX(0)}35%{transform:scaleY(1.18) skewX(5deg)}70%{transform:scaleY(.9) skewX(-4deg)}}
+  /* руки-огоньки слегка покачиваются */
+  #sparkArms .armL{transform-origin:26px 80px;animation:armWaveL 2.8s ease-in-out infinite}
+  #sparkArms .armR{transform-origin:74px 80px;animation:armWaveR 2.8s ease-in-out infinite}
+  @keyframes armWaveL{0%,100%{transform:rotate(0)}50%{transform:rotate(-10deg)}}
+  @keyframes armWaveR{0%,100%{transform:rotate(0)}50%{transform:rotate(10deg)}}
+  /* фейерверк */
+  #sparkFireworks .fw line{transform-origin:50px 64px}
 
   /* пузырь реплики — вверх-влево, не перекрывает UI */
   #sparkBubble{position:absolute;bottom:64px;right:0;max-width:236px;width:max-content;
@@ -325,6 +338,9 @@
   #sparkSvg.emo-cheer #sparkGlow{animation:glowPulse .8s ease-in-out infinite}
   @keyframes glowPulse{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
   #sparkSvg.emo-cheer #blushL,#sparkSvg.emo-cheer #blushR{opacity:.85}
+  #sparkSvg.emo-cheer #sparkFireworks{opacity:1;animation:fwBurst .9s ease-out infinite}
+  #sparkSvg.emo-cheer #sparkTeeth{opacity:.9}
+  @keyframes fwBurst{0%{opacity:0;transform:scale(.3)}25%{opacity:1}100%{opacity:0;transform:scale(1.5)}}
 
   /* гордость: «горделивый» подъём с сиянием */
   #sparkSvg.emo-proud{animation:sparkProud 2.4s ease-in-out infinite}
@@ -376,23 +392,40 @@
   #sparkSvg.emo-blaze #sparkEmbers{opacity:1}
   #sparkSvg.emo-blaze .ember{animation:emberBurst .55s ease-out infinite}
   #sparkSvg.emo-blaze #blushL,#sparkSvg.emo-blaze #blushR{opacity:.7}
+  #sparkSvg.emo-blaze #sparkFireworks{opacity:1;animation:fwBurst .55s ease-out infinite}
+  #sparkSvg.emo-blaze .tongue{animation-duration:.5s}
 
-  /* замерзает: холодный синий оттенок, иней, сжимается */
+  /* замерзает: холодный синий оттенок, иней, сжимается, языки почти замирают */
   #sparkSvg.emo-freeze{animation:sparkFreeze 1.2s ease forwards}
   @keyframes sparkFreeze{0%{filter:none;transform:scale(1)}100%{filter:hue-rotate(165deg) saturate(.65) brightness(.95);transform:scale(.94)}}
   #sparkSvg.emo-freeze #sparkBody{filter:hue-rotate(165deg) saturate(.6) brightness(1.05)}
   #sparkSvg.emo-freeze #sparkGlow{opacity:.4}
+  #sparkSvg.emo-freeze #sparkFrost{opacity:1;transition:opacity .8s}
+  #sparkSvg.emo-freeze .tongue{animation-duration:5s}
+  #sparkSvg.emo-freeze #sparkArms .armL,#sparkSvg.emo-freeze #sparkArms .armR{animation-duration:6s}
 
-  /* дрожит от холода: мелкая тряска + синева */
+  /* дрожит от холода: мелкая тряска + синева + иней */
   #sparkSvg.emo-shiver{animation:sparkShiver .12s linear infinite}
   @keyframes sparkShiver{0%{transform:translate(0,0)}25%{transform:translate(-1.5px,.5px)}50%{transform:translate(1.5px,-.5px)}75%{transform:translate(-1px,1px)}100%{transform:translate(1px,0)}}
   #sparkSvg.emo-shiver #sparkBody{filter:hue-rotate(150deg) saturate(.7)}
+  #sparkSvg.emo-shiver #sparkFrost{opacity:.7}
 
   /* кружится голова (можно вызвать на сложном): вращение */
   #sparkSvg.emo-dizzy{animation:sparkDizzy 1.2s ease-in-out}
   @keyframes sparkDizzy{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
   #sparkSvg.emo-dizzy #eyeL,#sparkSvg.emo-dizzy #eyeR{animation:eyeSpin 1.2s linear;transform-origin:center}
   @keyframes eyeSpin{0%{transform:rotate(0)}100%{transform:rotate(-360deg)}}
+
+  /* вспышка: резкий яркий всплеск с бликом и искрами */
+  #sparkSvg.emo-flash{animation:sparkFlash .55s ease-out}
+  @keyframes sparkFlash{0%{transform:scale(1)}18%{transform:scale(1.22)}40%{transform:scale(.96)}100%{transform:scale(1)}}
+  #sparkSvg.emo-flash #sparkBody{animation:flashBright .55s ease-out}
+  @keyframes flashBright{0%{filter:brightness(1)}18%{filter:brightness(1.7) saturate(1.3)}100%{filter:brightness(1)}}
+  #sparkSvg.emo-flash #sparkGlow{animation:flashGlow .55s ease-out}
+  @keyframes flashGlow{0%{opacity:.7;transform:scale(1)}18%{opacity:1;transform:scale(1.5)}100%{opacity:.7;transform:scale(1)}}
+  #sparkSvg.emo-flash #sparkEmbers{opacity:1}
+  #sparkSvg.emo-flash .ember{animation:emberBurst .55s ease-out}
+  #sparkSvg.emo-flash #blushL,#sparkSvg.emo-flash #blushR{opacity:.6}
 
   @media (prefers-reduced-motion: reduce){
     #sparkSvg,#sparkBody,#sparkCore,#sparkGlow,#sparkSvg .ember{animation:none!important}
@@ -1757,53 +1790,108 @@ const SPARK_ERROR_COACH = {
 // ====== ИСКРА — маскот (дух огня кантины) ======
 // SVG рисуется один раз, эмоции = классы + смена черт лица/пламени
 const SPARK_SVG = `
-<svg id="sparkSvg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<svg id="sparkSvg" viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <defs>
-    <radialGradient id="flameGrad" cx="50%" cy="62%" r="60%">
-      <stop offset="0%" stop-color="#fff2c4"/>
-      <stop offset="38%" stop-color="#f0b35e"/>
-      <stop offset="72%" stop-color="#e0742f"/>
-      <stop offset="100%" stop-color="#bd4a1e"/>
+    <radialGradient id="flameGrad" cx="50%" cy="64%" r="62%">
+      <stop offset="0%" stop-color="#fff6d2"/>
+      <stop offset="32%" stop-color="#ffd36b"/>
+      <stop offset="64%" stop-color="#ef8a32"/>
+      <stop offset="100%" stop-color="#c2451c"/>
     </radialGradient>
+    <linearGradient id="tongueGrad" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#ef8a32"/>
+      <stop offset="60%" stop-color="#ffce63"/>
+      <stop offset="100%" stop-color="#fff2c0"/>
+    </linearGradient>
     <radialGradient id="glowGrad" cx="50%" cy="55%" r="55%">
-      <stop offset="0%" stop-color="rgba(240,179,94,.55)"/>
-      <stop offset="100%" stop-color="rgba(240,179,94,0)"/>
+      <stop offset="0%" stop-color="rgba(245,170,80,.6)"/>
+      <stop offset="100%" stop-color="rgba(245,170,80,0)"/>
     </radialGradient>
-    <filter id="soft"><feGaussianBlur stdDeviation="0.6"/></filter>
+    <radialGradient id="coreGrad" cx="50%" cy="60%" r="55%">
+      <stop offset="0%" stop-color="#fff7df"/>
+      <stop offset="100%" stop-color="#ffd06a"/>
+    </radialGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="0.5"/></filter>
   </defs>
+
   <!-- свечение -->
-  <ellipse id="sparkGlow" cx="50" cy="60" rx="46" ry="52" fill="url(#glowGrad)"/>
-  <!-- тлеющие угольки/искры -->
+  <ellipse id="sparkGlow" cx="50" cy="66" rx="48" ry="56" fill="url(#glowGrad)"/>
+
+  <!-- летящие искры/угольки -->
   <g id="sparkEmbers" opacity="0">
-    <circle class="ember e1" cx="30" cy="40" r="2" fill="#ffd98a"/>
-    <circle class="ember e2" cx="70" cy="46" r="1.6" fill="#ffcf6e"/>
-    <circle class="ember e3" cx="52" cy="26" r="1.8" fill="#fff0c0"/>
+    <circle class="ember e1" cx="30" cy="44" r="2.1" fill="#ffd98a"/>
+    <circle class="ember e2" cx="70" cy="50" r="1.7" fill="#ffcf6e"/>
+    <circle class="ember e3" cx="52" cy="28" r="1.9" fill="#fff0c0"/>
+    <circle class="ember e4" cx="40" cy="34" r="1.4" fill="#ffe39c"/>
+    <circle class="ember e5" cx="62" cy="36" r="1.5" fill="#fff6d0"/>
   </g>
+
+  <!-- фейерверк (вспышки лучами, по умолчанию скрыт) -->
+  <g id="sparkFireworks" opacity="0">
+    <g class="fw" stroke="#ffd06a" stroke-width="2" stroke-linecap="round">
+      <line x1="50" y1="64" x2="50" y2="40"/><line x1="50" y1="64" x2="74" y2="50"/>
+      <line x1="50" y1="64" x2="78" y2="70"/><line x1="50" y1="64" x2="68" y2="90"/>
+      <line x1="50" y1="64" x2="32" y2="90"/><line x1="50" y1="64" x2="22" y2="70"/>
+      <line x1="50" y1="64" x2="26" y2="50"/>
+    </g>
+    <circle class="fwdot" cx="50" cy="40" r="2.4" fill="#fff2c0"/>
+    <circle class="fwdot" cx="74" cy="50" r="2.4" fill="#ffd06a"/>
+    <circle class="fwdot" cx="78" cy="70" r="2.4" fill="#ff9a4a"/>
+    <circle class="fwdot" cx="68" cy="90" r="2.4" fill="#ffd06a"/>
+    <circle class="fwdot" cx="32" cy="90" r="2.4" fill="#fff2c0"/>
+    <circle class="fwdot" cx="22" cy="70" r="2.4" fill="#ff9a4a"/>
+    <circle class="fwdot" cx="26" cy="50" r="2.4" fill="#ffd06a"/>
+  </g>
+
+  <!-- языки пламени (верх головы), колышутся -->
+  <g id="sparkTongues">
+    <path class="tongue t1" fill="url(#tongueGrad)" d="M50 18 C54 30 52 38 50 44 C48 38 46 30 50 18 Z"/>
+    <path class="tongue t2" fill="url(#tongueGrad)" d="M36 26 C40 36 39 42 38 48 C35 42 32 34 36 26 Z"/>
+    <path class="tongue t3" fill="url(#tongueGrad)" d="M64 26 C68 36 67 42 64 48 C61 42 60 34 64 26 Z"/>
+  </g>
+
+  <!-- руки-огоньки -->
+  <g id="sparkArms" fill="url(#flameGrad)" opacity=".95">
+    <path class="arm armL" d="M24 74 C14 72 10 80 14 86 C18 82 22 82 26 84 C24 80 24 77 24 74 Z"/>
+    <path class="arm armR" d="M76 74 C86 72 90 80 86 86 C82 82 78 82 74 84 C76 80 76 77 76 74 Z"/>
+  </g>
+
   <!-- тело-пламя -->
   <path id="sparkBody" fill="url(#flameGrad)" filter="url(#soft)"
-    d="M50 14 C66 30 78 44 78 66 C78 90 64 104 50 104 C36 104 22 90 22 66 C22 44 34 30 50 14 Z"/>
-  <!-- внутренний светлый язык -->
-  <path id="sparkCore" fill="#ffe6a8" opacity=".55"
-    d="M50 44 C58 54 62 60 62 72 C62 84 56 92 50 92 C44 92 38 84 38 72 C38 60 42 54 50 44 Z"/>
+    d="M50 20 C68 36 80 50 80 74 C80 100 65 114 50 114 C35 114 20 100 20 74 C20 50 32 36 50 20 Z"/>
+  <!-- внутренняя светлая сердцевина -->
+  <path id="sparkCore" fill="url(#coreGrad)" opacity=".6"
+    d="M50 50 C60 60 64 67 64 80 C64 94 57 102 50 102 C43 102 36 94 36 80 C36 67 40 60 50 50 Z"/>
+
+  <!-- иней (для заморозки), скрыт -->
+  <g id="sparkFrost" opacity="0">
+    <path d="M30 64 l8 4 M70 64 l-8 4 M50 96 l0 8 M34 84 l-6 4 M66 84 l6 4"
+      stroke="#cfeff7" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+    <circle cx="38" cy="58" r="1.6" fill="#dff3fb"/><circle cx="62" cy="58" r="1.6" fill="#dff3fb"/>
+    <circle cx="50" cy="100" r="1.4" fill="#dff3fb"/>
+  </g>
+
   <!-- лицо -->
   <g id="sparkFace">
-    <!-- глаза -->
+    <!-- глаза-угольки -->
     <g id="sparkEyes" fill="#3a1d08">
-      <circle id="eyeL" cx="42" cy="66" r="4.4"/>
-      <circle id="eyeR" cx="58" cy="66" r="4.4"/>
-      <circle cx="43.4" cy="64.6" r="1.4" fill="#fff" opacity=".9"/>
-      <circle cx="59.4" cy="64.6" r="1.4" fill="#fff" opacity=".9"/>
+      <ellipse id="eyeL" cx="41" cy="74" rx="5" ry="5.6"/>
+      <ellipse id="eyeR" cx="59" cy="74" rx="5" ry="5.6"/>
+      <circle cx="42.6" cy="72" r="1.6" fill="#ffe9b0" opacity=".95"/>
+      <circle cx="60.6" cy="72" r="1.6" fill="#ffe9b0" opacity=".95"/>
     </g>
     <!-- закрытые глаза (сон/моргание) -->
-    <g id="sparkEyesClosed" stroke="#3a1d08" stroke-width="2.4" stroke-linecap="round" opacity="0">
-      <path d="M37 66 q5 4 10 0"/><path d="M53 66 q5 4 10 0"/>
+    <g id="sparkEyesClosed" stroke="#3a1d08" stroke-width="2.6" stroke-linecap="round" opacity="0">
+      <path d="M35 74 q6 5 12 0"/><path d="M53 74 q6 5 12 0"/>
     </g>
-    <!-- рот -->
-    <path id="sparkMouth" fill="none" stroke="#3a1d08" stroke-width="2.6" stroke-linecap="round"
-      d="M44 78 q6 5 12 0"/>
+    <!-- рот-пламя -->
+    <path id="sparkMouth" fill="none" stroke="#3a1d08" stroke-width="3" stroke-linecap="round"
+      d="M43 88 q7 6 14 0"/>
+    <!-- зубки-огонёк (видны при широкой улыбке) -->
+    <path id="sparkTeeth" fill="#fff2c0" opacity="0" d="M45 89 q5 4 10 0 q-5 1 -10 0 Z"/>
     <!-- румянец -->
-    <ellipse id="blushL" cx="36" cy="74" rx="3.4" ry="2.1" fill="#ff8a4a" opacity="0"/>
-    <ellipse id="blushR" cx="64" cy="74" rx="3.4" ry="2.1" fill="#ff8a4a" opacity="0"/>
+    <ellipse id="blushL" cx="33" cy="83" rx="3.8" ry="2.3" fill="#ff8a4a" opacity="0"/>
+    <ellipse id="blushR" cx="67" cy="83" rx="3.8" ry="2.3" fill="#ff8a4a" opacity="0"/>
   </g>
 </svg>`;
 
@@ -1811,21 +1899,27 @@ const SPARK_SVG = `
 const SPARK_LINES = {
   home: [
     "Привет, путник. Я Искра — посижу с тобой у огня.",
-    "Каждое блюдо — как искра. Соберём их вместе.",
-    "Готов? Пламя знаний не гаснет у того, кто пробует.",
+    "Каждое блюдо — как искра. Соберём их в одно большое пламя.",
+    "Готов? Огонь знаний не гаснет у того, кто пробует.",
     "Снова ты! Угольки уже тёплые — начнём?",
     "У огня кантины всегда найдётся место для тебя.",
     "Пустыня большая, но меню мы одолеем по кусочку.",
-    "Разожжём память? Я подкину пару хитростей."
+    "Разожжём память? Я подкину пару хитростей.",
+    "Сегодня ты станешь чуть ближе к мастерству. Я верю.",
+    "Большие повара начинались с одного блюда. Начнём с твоего.",
+    "Тепло, спокойно, без спешки. Мы тут надолго и по-доброму."
   ],
   startQuiz: [
     "Вдохни. Ты знаешь больше, чем думаешь.",
-    "Идём шаг за шагом — я рядом.",
+    "Идём шаг за шагом — я рядом на каждом.",
     "Покажем, на что ты способен.",
     "Не на скорость, а на точность. Спокойно.",
     "Каждый верный ответ — полено в твой костёр.",
-    "Ошибёшься — не страшно, я подскажу как запомнить.",
-    "Поехали. Пусть пламя разгорается."
+    "Ошибёшься — не страшно, я подскажу, как запомнить.",
+    "Поехали. Пусть пламя разгорается.",
+    "Соберись, как проводник перед дорогой. Ты готов.",
+    "Здесь нет экзаменатора — только ты и твой огонь.",
+    "Доверься тому, что уже знаешь. Остальное подскажу я."
   ],
   correct: [
     "Вот это огонь! Так держать.",
@@ -1837,74 +1931,113 @@ const SPARK_LINES = {
     "В точку. Память крепнет.",
     "Так и есть! Ты на верном пути.",
     "Огонь признаёт своего. Молодец.",
-    "Уверенно. Мне нравится твой настрой."
+    "Уверенно. Мне нравится твой настрой.",
+    "Браво! Это знание уже не потеряешь.",
+    "Вот так мастера и растут — ответ за ответом.",
+    "Идеально. Я аж ярче загорелся от радости.",
+    "Ты будто всегда это знал. Здорово!",
+    "Есть! Ещё один кирпичик уверенности.",
+    "Спокойно и точно — как настоящий профи.",
+    "Это было красиво. Правда.",
+    "Растёшь на глазах. Продолжаем!",
+    "Щёлкаешь как орешки. Горжусь.",
+    "Тёплый, верный, твой ответ. Дальше!"
   ],
   wrong: [
     "Ничего. Даже большой костёр начинался с искры.",
     "Спокойно — ошибка это часть пути. Идём дальше.",
-    "Не страшно. Теперь ты это запомнишь крепче.",
+    "Не страшно. Теперь ты запомнишь это крепче.",
     "Бывает. Я всё ещё в тебя верю.",
-    "Промах — это просто следующий шаг к точному удару.",
+    "Промах — просто следующий шаг к точному удару.",
     "Ничего страшного. Дай-ка подскажу хитрость…",
     "Тут многие спотыкаются. Сейчас разберём.",
     "Не вешай нос. Один уголёк — ещё не весь костёр.",
     "Запомним через ошибку — так даже надёжнее.",
-    "Я рядом. Поправимся и пойдём дальше."
+    "Я рядом. Поправимся и пойдём дальше.",
+    "Ошибся? Значит, сейчас выучишь это навсегда.",
+    "Это не падение, а разбег. Поднимаемся.",
+    "Мягко выдохни. Ошибка — учитель, не судья.",
+    "Каждый мастер ошибался тысячу раз. Ты в хорошей компании.",
+    "Не корю тебя ни капли. Давай разберёмся вместе.",
+    "Споткнулся — встал — пошёл дальше. Так и растут.",
+    "Это всего лишь один вопрос из многих. Дыши.",
+    "Я не гасну от твоих ошибок. И ты не гасни.",
+    "Перевернём это в урок. Слушай подсказку…",
+    "Всё хорошо. Мы здесь именно чтобы учиться."
   ],
   streak5: [
     "Пять подряд! Пламя растёт.",
     "Ты на волне — не останавливайся!",
     "Пятёрка влёт! Чувствуешь жар?",
-    "Разгорелось! Так держать темп."
+    "Разгорелось! Так держать темп.",
+    "Пять из пяти — рука твёрдая!",
+    "О, пошла серия! Мне нравится."
   ],
   streak10: [
     "Десять! Ты горишь по-настоящему.",
     "Вот это жар! Кантина тобой гордится.",
-    "Десять подряд — рука у тебя твёрдая!",
-    "Огонь до небес. Невероятно идёшь."
+    "Десять подряд — рука у тебя стальная!",
+    "Огонь до небес. Невероятно идёшь.",
+    "Десятка! Я аж искрами сыплю от восторга.",
+    "Это уже не разминка — это мастерство."
   ],
   streak25: [
     "Двадцать пять подряд — ты настоящий мастер огня!",
     "Невероятно. Ты сам теперь как маяк в пустыне.",
-    "Двадцать пять! Проводники слагают о тебе легенды.",
-    "Это уже не искра — это целый костёр знаний!"
+    "Двадцать пять! Проводники сложат о тебе легенды.",
+    "Это уже не искра — это целый костёр знаний!",
+    "Я в восторге! Двадцать пять без осечки — феноменально.",
+    "Ты сегодня ярче обоих солнц Татуина!"
   ],
   thinking: [
     "Не спеши. Подумай — ответ ближе, чем кажется.",
     "Тихо… прислушайся к тому, что уже знаешь.",
     "Представь тарелку перед собой — что на ней?",
     "Если сомневаешься, вспомни закономерность.",
-    "Доверься памяти — ты это уже встречал."
+    "Доверься памяти — ты это уже встречал.",
+    "Закрой глаза на миг и увидь блюдо целиком.",
+    "Спокойно. Лучший ответ приходит без паники.",
+    "Прокрути в голове состав слева направо."
   ],
   resultHigh: [
     "Ты готов. Пустыня покорится тебе.",
     "Блестяще! Аттестация — формальность для тебя.",
     "Огонь мастера. Иди и удиви их.",
-    "Вот это уровень! Я горжусь, что грел тебе путь."
+    "Вот это уровень! Я горжусь, что грел тебе путь.",
+    "Великолепно. Ты заслужил каждую искру этого результата.",
+    "Сегодня ты — пламя, на которое равняются."
   ],
   resultMid: [
     "Уже близко. Ещё пара заходов — и ты там.",
     "Хорошая основа. Добавим жару — и готово.",
     "Крепко идёшь. Подтянем слабые блюда — и порядок.",
-    "Половина пути позади. Дальше будет легче."
+    "Половина пути позади. Дальше будет легче.",
+    "Видишь прогресс? Он реальный. Продолжай.",
+    "Ты уже не новичок. Ещё чуть-чуть до мастера."
   ],
   resultLow: [
-    "Не сдавайся. Каждый проводник когда-то начинал с нуля.",
+    "Не сдавайся. Каждый проводник начинал с нуля.",
     "Огонь не гаснет от одной попытки. Пробуем ещё.",
-    "Это только начало костра. Подкинем дров — разгорится.",
-    "Загляни в «Изучение меню», и вернёмся сильнее."
+    "Это только растопка. Подкинем дров — разгорится.",
+    "Загляни в «Изучение меню», и вернёмся сильнее.",
+    "Первые шаги всегда трудны. Ты уже идёшь — это главное.",
+    "Я верю в тебя больше, чем этот процент. Ещё разок?"
   ],
   study: [
     "Изучай спокойно — я подсвечу путь.",
     "Здесь все ответы. Впитывай, как песок воду.",
     "Читай не спеша — память любит тишину.",
-    "Нашёл что-то новое? Загляни в детали блюда."
+    "Нашёл что-то новое? Загляни в детали блюда.",
+    "Хорошие повара перечитывают по многу раз. Это нормально.",
+    "Смотри глазами гостя — что бы ты хотел узнать о блюде?"
   ],
   idle: [
     "…тлею потихоньку. Позови, когда будешь готов.",
     "Я здесь, рядом. Грею угольки.",
     "Отдохни, я посторожу огонь.",
-    "Когда захочешь — продолжим. Я не гасну."
+    "Когда захочешь — продолжим. Я не гасну.",
+    "Передохнул? Я соскучился по верным ответам.",
+    "Тишина тоже полезна. Но вместе теплее."
   ],
   tickle: [
     "Ха-ха, щекотно! Перестань… ну ладно, ещё разок!",
@@ -1913,8 +2046,12 @@ const SPARK_LINES = {
     "Ха! Щекотки боюсь больше, чем воды.",
     "Хихи! От смеха я аж ярче горю!",
     "Эй-эй! Так и до фейерверка недалеко, ха-ха!",
-    "Щекотно-щекотно! Ладно, ладно, занимаемся дальше?",
-    "Пф-ха! Искры из глаз… в хорошем смысле!"
+    "Щекотно-щекотно! Ладно, занимаемся дальше?",
+    "Пф-ха! Искры из глаз… в хорошем смысле!",
+    "Ауч, тепло же! Хи-хи, ну ты и проказник.",
+    "Хохо! Ещё чуть-чуть — и я взлечу фейерверком!",
+    "Перестань, я сейчас лопну от смеха искрами!",
+    "Хихи! С тобой даже тлеть весело."
   ]
 };
 
@@ -1922,7 +2059,7 @@ const SPARK_LINES = {
 const SPARK_EMO = {
   calm:'calm', happy:'happy', sad:'sad', wink:'wink', excited:'excited',
   cheer:'cheer', think:'think', proud:'proud', support:'support', curious:'curious', sleep:'sleep',
-  tickle:'tickle', blaze:'blaze', freeze:'freeze', shiver:'shiver', dizzy:'dizzy'
+  tickle:'tickle', blaze:'blaze', freeze:'freeze', shiver:'shiver', dizzy:'dizzy', flash:'flash'
 };
 // какая эмоция для какой ситуации
 const SPARK_FOR = {
@@ -1936,12 +2073,12 @@ let sparkIdleTimer=null, sparkBubbleTimer=null, sparkRevert=null;
 function spark(){return document.getElementById('sparkWrap');}
 // формы рта по эмоциям (надёжнее, чем CSS d:)
 const SPARK_MOUTH={
-  calm:"M44 78 q6 5 12 0", happy:"M42 77 q8 8 16 0", sad:"M44 82 q6 -5 12 0",
-  wink:"M43 77 q7 7 14 0", think:"M45 79 q5 3 10 0", curious:"M45 78 q5 4 10 0",
-  excited:"M42 77 q8 8 16 0", cheer:"M41 76 q9 10 18 0", proud:"M43 78 q7 6 14 0",
-  support:"M44 78 q6 5 12 0", sleep:"M46 79 q4 2 8 0",
-  tickle:"M40 76 q10 12 20 0", blaze:"M41 76 q9 11 18 0", freeze:"M45 80 q5 -3 10 0",
-  shiver:"M44 79 q6 2 12 0", dizzy:"M44 80 q6 4 12 0"
+  calm:"M43 88 q7 6 14 0", happy:"M41 87 q9 9 18 0", sad:"M43 93 q7 -6 14 0",
+  wink:"M42 87 q8 8 16 0", think:"M44 90 q6 3 12 0", curious:"M44 89 q6 4 12 0",
+  excited:"M41 87 q9 9 18 0", cheer:"M40 86 q10 11 20 0", proud:"M42 89 q8 6 16 0",
+  support:"M43 89 q7 5 14 0", sleep:"M45 90 q5 2 10 0",
+  tickle:"M39 87 q11 12 22 0", blaze:"M40 86 q10 11 20 0", freeze:"M44 92 q6 -3 12 0",
+  shiver:"M43 90 q7 2 14 0", dizzy:"M43 91 q7 4 14 0", flash:"M40 86 q10 11 20 0"
 };
 function sparkSetEmotion(emo){
   emo=emo||'calm';
@@ -1974,8 +2111,8 @@ function sparkSay(line){
   closeBtn.onclick=(e)=>{ e.stopPropagation(); sparkHideBubble(); };
   b.classList.add('show');
   clearTimeout(sparkBubbleTimer);
-  // длительность зависит от длины текста: ~55мс/символ, мин 4.5с, макс 12с
-  const dur=Math.min(12000, Math.max(4500, line.length*55));
+  // длительность зависит от длины текста: ~80мс/символ, мин 6с, макс 18с
+  const dur=Math.min(18000, Math.max(6000, line.length*80));
   sparkBubbleTimer=setTimeout(()=>b.classList.remove('show'), dur);
 }
 // выбор фразы без повтора последней из набора
@@ -2000,7 +2137,7 @@ function sparkReact(situation, opts){
   }
   // временные эмоции возвращаются в спокойствие; фоновые (calm/curious/sleep) — остаются
   clearTimeout(sparkRevert);
-  const transient=['happy','sad','wink','excited','cheer','proud','support','tickle','blaze','dizzy','shiver'];
+  const transient=['happy','sad','wink','excited','cheer','proud','support','tickle','blaze','dizzy','shiver','flash'];
   if(transient.includes(emo)){
     sparkRevert=setTimeout(()=>sparkSetEmotion(document.body.dataset.sparkRest||'calm'), opts.hold||2600);
   } else {
@@ -2037,7 +2174,7 @@ function sparkOutcome(ok, q){
     if(s===25){sparkSetEmotion('blaze');sparkSay(pickLine('streak25',SPARK_LINES.streak25));clearTimeout(sparkRevert);sparkRevert=setTimeout(()=>sparkSetEmotion(document.body.dataset.sparkRest||'calm'),3400);return;}
     if(s===10){sparkSetEmotion('blaze');sparkSay(pickLine('streak10',SPARK_LINES.streak10));clearTimeout(sparkRevert);sparkRevert=setTimeout(()=>sparkSetEmotion(document.body.dataset.sparkRest||'calm'),3200);return;}
     if(s===5){sparkReact('streak5',{hold:2800});return;}
-    sparkSetEmotion('happy');
+    sparkSetEmotion(Math.random()<0.35?'flash':'happy');
     if(Math.random()<0.3){const h=sparkPickHint(q,true); if(h){sparkSay('💡 '+h);} else sparkSay(pickLine('correct',SPARK_LINES.correct));}
     else sparkSay(pickLine('correct',SPARK_LINES.correct));
     clearTimeout(sparkRevert);
